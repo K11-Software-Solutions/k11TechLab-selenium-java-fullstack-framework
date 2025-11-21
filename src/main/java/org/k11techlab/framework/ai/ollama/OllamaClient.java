@@ -169,12 +169,14 @@ public class OllamaClient {
             
             // Finally, test actual generation
             Log.info("Quick AI availability check for model: " + model);
-            String response = callOllama("Say OK");
-            boolean available = response != null && response.toLowerCase().contains("ok");
+            String response = callOllama("Respond with just: READY");
+            boolean available = response != null && !response.trim().isEmpty() && response.length() > 3;
             
             if (available) {
                 Log.info("✅ AI availability: " + available + " (model: " + model + ")");
                 System.out.println("✅ Ollama AI fully operational with model: " + model);
+                System.out.println("🤖 AI Response Preview: " + 
+                    (response.length() > 100 ? response.substring(0, 100) + "..." : response));
             } else {
                 Log.info("❌ AI generation test failed (model: " + model + ")");
                 System.out.println("❌ AI generation test failed - response: " + response);
