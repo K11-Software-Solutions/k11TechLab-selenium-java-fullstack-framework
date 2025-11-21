@@ -63,7 +63,8 @@ jobs:
         mvn test -Dtest="SimpleAIDemo" \
           -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver \
           -Djava.awt.headless=true \
-          -Dheadless=true
+          -Dheadless=true \
+          -Dselenium.suppress.cdp.warnings=true
     
     - name: Verify AI framework integrity
       run: |

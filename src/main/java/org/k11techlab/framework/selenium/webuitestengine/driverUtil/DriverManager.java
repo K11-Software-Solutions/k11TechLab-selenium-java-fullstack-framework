@@ -108,6 +108,12 @@ public class DriverManager {
         if (driverDownloadPath != null && !driverDownloadPath.isEmpty()) {
             System.setProperty("wdm.targetPath", driverDownloadPath);
         }
+        
+        // Suppress CDP version warnings for cleaner output (configurable via system property)
+        if (!"false".equalsIgnoreCase(System.getProperty("selenium.suppress.cdp.warnings", "true"))) {
+            Logger.getLogger("org.openqa.selenium.devtools.CdpVersionFinder").setLevel(Level.OFF);
+            Logger.getLogger("org.openqa.selenium.chromium.ChromiumDriver").setLevel(Level.WARNING);
+        }
     }
 
     /**
@@ -230,6 +236,10 @@ public class DriverManager {
         options.addArguments("--disable-extensions");
         options.addArguments("--ignore-certificate-errors");
         options.addArguments("--remote-allow-origins=*"); // optional
+        
+        // Suppress CDP version warnings (cosmetic fix for cleaner output)
+        options.addArguments("--disable-dev-tools");
+        options.addArguments("--log-level=3"); // Only show fatal errors
 
         // Optional (fix renderer crashes)
         options.addArguments("--no-sandbox");

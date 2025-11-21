@@ -212,7 +212,8 @@ jobs:
           -Dai.model=tinyllama \
           -Dollama.host=http://localhost:11434 \
           -Djava.awt.headless=true \
-          -Dtest.parallel=false
+          -Dtest.parallel=false \
+          -Dselenium.suppress.cdp.warnings=true
       env:
         OLLAMA_HOST: http://localhost:11434
         DISPLAY: :99
