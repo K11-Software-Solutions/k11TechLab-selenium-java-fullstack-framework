@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.Keys;
 import org.k11techlab.framework.selenium.webuitestengine.logger.Log;
 import static org.testng.Assert.*;
 
@@ -33,9 +34,9 @@ public class SimpleAIDemo extends BaseSeleniumTest {
         Log.info("AI Locator Suggestions:");
         Log.info(locatorSuggestions);
         
-        // Use actual locators to demonstrate the concept
-        WebElement searchBox = getDriver().findElement(By.id("searchInput"));
-        searchBox.sendKeys("Test Automation");
+        // Use actual locators to demonstrate the concept - Google search box
+        WebElement searchBox = getDriver().findElement(By.name("q"));
+        searchBox.sendKeys("Test Automation with AI");
         
         Log.info("Successfully demonstrated locator concept with AI guidance");
         
@@ -48,17 +49,17 @@ public class SimpleAIDemo extends BaseSeleniumTest {
         Log.info("=== Simple AI Test Generation Demo ===");
         
         // Get AI test suggestions
-        String testSuggestion = aiClient.generateSuggestion("test for Wikipedia search functionality");
+        String testSuggestion = aiClient.generateSuggestion("test for Google search functionality");
         Log.info("AI Test Generation:");
         Log.info(testSuggestion);
         
         // Demonstrate the concept by executing a basic test
-        WebElement searchInput = getDriver().findElement(By.id("searchInput"));
+        WebElement searchInput = getDriver().findElement(By.name("q"));
         searchInput.clear();
-        searchInput.sendKeys("Selenium WebDriver");
+        searchInput.sendKeys("Selenium WebDriver with AI");
         
-        WebElement searchButton = getDriver().findElement(By.xpath("//button[@type='submit']"));
-        searchButton.click();
+        // Google search button or just press Enter
+        searchInput.sendKeys(Keys.ENTER);
         
         // Simple verification
         try {
@@ -101,11 +102,11 @@ public class SimpleAIDemo extends BaseSeleniumTest {
         
         try {
             // Step 1: Get AI advice for element location
-            String locatorAdvice = aiClient.generateSuggestion("find search input on Wikipedia");
+            String locatorAdvice = aiClient.generateSuggestion("find search input on Google");
             Log.info("Step 1 - AI Locator Advice: " + locatorAdvice);
             
             // Step 2: Apply the advice (using actual locator)
-            WebElement searchElement = getDriver().findElement(By.id("searchInput"));
+            WebElement searchElement = getDriver().findElement(By.name("q"));
             Log.info("Step 2 - Found search element using guidance");
             
             // Step 3: Get AI advice for test actions
@@ -114,10 +115,11 @@ public class SimpleAIDemo extends BaseSeleniumTest {
             
             // Step 4: Execute the test based on AI guidance
             searchElement.clear();
-            searchElement.sendKeys("Artificial Intelligence");
+            searchElement.sendKeys("AI Testing Framework");
+            searchElement.sendKeys(Keys.ENTER);
             
-            WebElement submitButton = getDriver().findElement(By.xpath("//button[@type='submit']"));
-            submitButton.click();
+            // Wait for results page to load
+            Thread.sleep(2000);
             
             // Step 5: Simple verification
             Thread.sleep(2000); // Basic wait
