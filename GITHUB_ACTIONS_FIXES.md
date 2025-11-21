@@ -10,6 +10,10 @@
 **Problem**: `actions/upload-artifact@v3` and `actions/cache@v3` deprecated
 **Solution**: Updated to v4 versions for better performance and security
 
+### **ChromeDriver Path Resolution** ✅ FIXED
+**Problem**: `IllegalStateException: It must be an executable file: .../drivers/chromedriver.exe` on Linux
+**Solution**: Added platform-aware ChromeDriver path detection with system property support
+
 ---
 
 ## 🔧 **Previous Fixes Applied to GitHub Actions Workflow**
@@ -155,6 +159,7 @@ git push origin main
 |-------|-------------------|
 | Ollama timeout | Extended wait loop with better error handling |
 | ChromeDriver 404 | Chrome for Testing API with fallbacks |
+| ChromeDriver path | Platform-aware path detection with system property support |
 | Model pull timeout | 5-minute timeout with alternative models |
 | Deprecated actions | Updated to latest v4 versions |
 | Cache performance | actions/cache@v4 for better caching |
