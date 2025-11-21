@@ -1,6 +1,18 @@
 # ✅ GitHub Actions AI Testing - Fixed & Optimized
 
-## 🔧 **Fixes Applied to GitHub Actions Workflow**
+## 🚨 **LATEST FIXES (November 2025)**
+
+### **ChromeDriver 404 Error** ✅ FIXED
+**Problem**: `chromedriver.storage.googleapis.com` returning 404 Not Found
+**Solution**: Updated to Chrome for Testing API with fallbacks
+
+### **Deprecated Actions** ✅ FIXED  
+**Problem**: `actions/upload-artifact@v3` and `actions/cache@v3` deprecated
+**Solution**: Updated to v4 versions for better performance and security
+
+---
+
+## 🔧 **Previous Fixes Applied to GitHub Actions Workflow**
 
 ### **1. Ollama Service Startup** ✅ FIXED
 **Problem**: `timeout 60 bash -c 'until curl...'` syntax not GitHub Actions compatible
@@ -142,8 +154,10 @@ git push origin main
 | Issue | GitHub Actions Fix |
 |-------|-------------------|
 | Ollama timeout | Extended wait loop with better error handling |
-| ChromeDriver mismatch | Fallback to package manager installation |
+| ChromeDriver 404 | Chrome for Testing API with fallbacks |
 | Model pull timeout | 5-minute timeout with alternative models |
+| Deprecated actions | Updated to latest v4 versions |
+| Cache performance | actions/cache@v4 for better caching |
 | Test resource missing | Auto-create `src/test/resources/` directory |
 | Memory issues | Use smaller models (tinyllama vs llama3) |
 
