@@ -37,11 +37,22 @@ jobs:
       with:
         chrome-version: stable
     
-    - name: Install ChromeDriver
+    - name: Setup ChromeDriver (Reliable Method)
       run: |
+        # Install ChromeDriver using system package manager (most reliable)
         sudo apt-get update
         sudo apt-get install -y chromium-chromedriver
-        sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
+        
+        # Create symlink for consistent path
+        sudo ln -sf /usr/bin/chromedriver /usr/local/bin/chromedriver
+        
+        # Verify installation
+        chromedriver --version
+        google-chrome --version
+        
+        # Show where ChromeDriver is located
+        which chromedriver
+        ls -la /usr/local/bin/chromedriver
     
     - name: Compile and test compilation
       run: |

@@ -34,13 +34,40 @@ jobs:
       with:
         chrome-version: stable
     
-    - name: Download ChromeDriver
+    - name: Setup ChromeDriver
       run: |
-        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f3 | cut -d '.' -f1-3)
-        wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}/chromedriver_linux64.zip"
-        unzip chromedriver.zip
-        sudo mv chromedriver /usr/local/bin/
-        sudo chmod +x /usr/local/bin/chromedriver
+        # Use the new Chrome for Testing API
+        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f3)
+        echo "Chrome version: $CHROME_VERSION"
+        
+        # Get matching ChromeDriver version from Chrome for Testing API
+        CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json" | \
+          jq -r ".versions[] | select(.version == \"$CHROME_VERSION\") | .downloads.chromedriver[] | select(.platform == \"linux64\") | .url" | head -1)
+        
+        if [ -z "$CHROMEDRIVER_URL" ]; then
+          # Fallback: get latest stable version
+          echo "Exact version not found, using latest stable"
+          CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json" | \
+            jq -r '.milestones | to_entries | sort_by(.key | tonumber) | last | .value.downloads.chromedriver[] | select(.platform == "linux64") | .url')
+        fi
+        
+        if [ -n "$CHROMEDRIVER_URL" ]; then
+          echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
+          wget -O chromedriver.zip "$CHROMEDRIVER_URL"
+          unzip chromedriver.zip
+          
+          # Find the chromedriver binary (it might be in a subdirectory)
+          CHROMEDRIVER_BIN=$(find . -name chromedriver -type f | head -1)
+          sudo mv "$CHROMEDRIVER_BIN" /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
+        else
+          echo "Could not find ChromeDriver download URL, using system package"
+          sudo apt-get update && sudo apt-get install -y chromium-chromedriver
+          sudo ln -sf /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
+        fi
+        
+        # Verify installation
+        chromedriver --version
     
     - name: Run standard tests (excluding AI tests)
       run: |
@@ -76,24 +103,34 @@ jobs:
     
     - name: Setup ChromeDriver
       run: |
-        # Get Chrome version
-        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f3 | cut -d '.' -f1-3)
+        # Use the new Chrome for Testing API
+        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f3)
         echo "Chrome version: $CHROME_VERSION"
         
-        # Download and setup ChromeDriver with fallback
-        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}" || echo "114.0.5735.90")
-        echo "ChromeDriver version: $CHROMEDRIVER_VERSION"
+        # Get matching ChromeDriver version from Chrome for Testing API
+        CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json" | \
+          jq -r ".versions[] | select(.version == \"$CHROME_VERSION\") | .downloads.chromedriver[] | select(.platform == \"linux64\") | .url" | head -1)
         
-        wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" || {
-          echo "Fallback: using Ubuntu package manager"
+        if [ -z "$CHROMEDRIVER_URL" ]; then
+          # Fallback: get latest stable version
+          echo "Exact version not found, using latest stable"
+          CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json" | \
+            jq -r '.milestones | to_entries | sort_by(.key | tonumber) | last | .value.downloads.chromedriver[] | select(.platform == "linux64") | .url')
+        fi
+        
+        if [ -n "$CHROMEDRIVER_URL" ]; then
+          echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
+          wget -O chromedriver.zip "$CHROMEDRIVER_URL"
+          unzip chromedriver.zip
+          
+          # Find the chromedriver binary (it might be in a subdirectory)
+          CHROMEDRIVER_BIN=$(find . -name chromedriver -type f | head -1)
+          sudo mv "$CHROMEDRIVER_BIN" /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
+        else
+          echo "Could not find ChromeDriver download URL, using system package"
           sudo apt-get update && sudo apt-get install -y chromium-chromedriver
           sudo ln -sf /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
-        }
-        
-        if [ -f chromedriver.zip ]; then
-          unzip chromedriver.zip
-          sudo mv chromedriver /usr/local/bin/
-          sudo chmod +x /usr/local/bin/chromedriver
         fi
         
         # Verify installation
@@ -243,13 +280,40 @@ jobs:
       with:
         chrome-version: stable
     
-    - name: Download ChromeDriver
+    - name: Setup ChromeDriver
       run: |
-        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f3 | cut -d '.' -f1-3)
-        wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}/chromedriver_linux64.zip"
-        unzip chromedriver.zip
-        sudo mv chromedriver /usr/local/bin/
-        sudo chmod +x /usr/local/bin/chromedriver
+        # Use the new Chrome for Testing API
+        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f3)
+        echo "Chrome version: $CHROME_VERSION"
+        
+        # Get matching ChromeDriver version from Chrome for Testing API
+        CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json" | \
+          jq -r ".versions[] | select(.version == \"$CHROME_VERSION\") | .downloads.chromedriver[] | select(.platform == \"linux64\") | .url" | head -1)
+        
+        if [ -z "$CHROMEDRIVER_URL" ]; then
+          # Fallback: get latest stable version
+          echo "Exact version not found, using latest stable"
+          CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json" | \
+            jq -r '.milestones | to_entries | sort_by(.key | tonumber) | last | .value.downloads.chromedriver[] | select(.platform == "linux64") | .url')
+        fi
+        
+        if [ -n "$CHROMEDRIVER_URL" ]; then
+          echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
+          wget -O chromedriver.zip "$CHROMEDRIVER_URL"
+          unzip chromedriver.zip
+          
+          # Find the chromedriver binary (it might be in a subdirectory)
+          CHROMEDRIVER_BIN=$(find . -name chromedriver -type f | head -1)
+          sudo mv "$CHROMEDRIVER_BIN" /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
+        else
+          echo "Could not find ChromeDriver download URL, using system package"
+          sudo apt-get update && sudo apt-get install -y chromium-chromedriver
+          sudo ln -sf /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
+        fi
+        
+        # Verify installation
+        chromedriver --version
     
     - name: Run AI fallback tests (SimpleAIClient only)
       run: |
