@@ -51,9 +51,43 @@ public class DriverManager {
     private static final String seleniumHost;
     private static final String seleniumPort;
     private static final String seleniumRemoteUrl;
-    private static final String FALLBACK_DRIVER_PATH="drivers/chromedriver.exe";
+    
+    // Platform-aware fallback driver path
+    private static final String FALLBACK_DRIVER_PATH = getFallbackDriverPath();
 
     private static final String driverDownloadPath = ConfigurationManager.getBundle().getPropertyValue("wdm.targetPath");
+    
+    /**
+     * Get platform-appropriate ChromeDriver fallback path
+     */
+    private static String getFallbackDriverPath() {
+        // First check if system property is set (e.g., from GitHub Actions)
+        String systemDriverPath = System.getProperty("webdriver.chrome.driver");
+        if (systemDriverPath != null && new File(systemDriverPath).exists()) {
+            return systemDriverPath;
+        }
+        
+        // Platform-specific fallback paths
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            return "drivers/chromedriver.exe";
+        } else if (os.contains("mac")) {
+            return "drivers/chromedriver";
+        } else {
+            // Linux - check common locations
+            String[] linuxPaths = {
+                "/usr/local/bin/chromedriver",
+                "/usr/bin/chromedriver", 
+                "drivers/chromedriver"
+            };
+            for (String path : linuxPaths) {
+                if (new File(path).exists()) {
+                    return path;
+                }
+            }
+            return "drivers/chromedriver"; // Default fallback
+        }
+    }
 
     private static WebDriver driver;
 
@@ -118,6 +152,13 @@ public class DriverManager {
         } else {
             ChromeOptions options = getChromeOptions();
 
+            // First check if ChromeDriver path is already set (e.g., from GitHub Actions)
+            String existingDriverPath = System.getProperty("webdriver.chrome.driver");
+            if (existingDriverPath != null && new File(existingDriverPath).exists()) {
+                Log.LOGGER.info("Using pre-configured ChromeDriver from system property: " + existingDriverPath);
+                return new ChromeDriver(options);
+            }
+
             try {
                 // Preferred: Use WebDriverManager to download and configure the driver
                 System.setProperty("wdm.targetPath", "target");
@@ -136,7 +177,8 @@ public class DriverManager {
 
                 File fallback = new File(FALLBACK_DRIVER_PATH);
                 if (!fallback.exists()) {
-                    throw new RuntimeException("Fallback ChromeDriver not found at: " + fallback.getAbsolutePath());
+                    throw new RuntimeException("Fallback ChromeDriver not found at: " + fallback.getAbsolutePath() + 
+                        ". Available system property: " + System.getProperty("webdriver.chrome.driver"));
                 }
 
                 // Set manually and launch driver
