@@ -44,12 +44,27 @@ fi
 - ✅ **Future-proof**: Uses official Chrome for Testing API
 - ✅ **Fast**: System package manager fallback is very quick
 - ✅ **Robust**: Handles version mismatches gracefully
+- ✅ **Clean Output**: CDP warnings suppressed for better readability
+
+## CDP Version Warnings (Cosmetic)
+You may see warnings like:
+```
+WARNING: Unable to find version of CDP to use for . You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.6.0`
+```
+
+**These are cosmetic warnings only** - the tests work perfectly. This happens because:
+- Chrome version: 142.x (latest)
+- Selenium version: 4.6.0 (stable)
+- ChromeDriver: 142.x (matches Chrome)
+
+The framework now suppresses these warnings for cleaner output while maintaining full functionality.
 
 ## Verification
 After this fix, GitHub Actions should:
 1. Successfully download ChromeDriver
 2. Run AI tests without ChromeDriver-related errors
 3. Show proper ChromeDriver version in logs
+4. Display minimal CDP warnings (suppressed by default)
 
 ## Related Links
 - [Chrome for Testing API](https://googlechromelabs.github.io/chrome-for-testing/)
