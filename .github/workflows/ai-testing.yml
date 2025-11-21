@@ -174,18 +174,40 @@ jobs:
       
     - name: Pull AI model
       run: |
-        # Pull a smaller, faster model for CI with timeout
+        # Pull a smaller, faster model for CI with enhanced retry logic
         echo "📥 Pulling tinyllama model..."
-        timeout 300 ollama pull tinyllama || {
-          echo "❌ Failed to pull tinyllama, trying phi3-mini"
-          timeout 300 ollama pull phi3-mini || {
-            echo "❌ Model pull failed, using existing models"
-            ollama list
-          }
-        }
         
-        echo "📋 Available models:"
+        # Try pulling tinyllama with retries
+        for attempt in {1..3}; do
+          echo "Attempt $attempt to pull tinyllama..."
+          if timeout 300 ollama pull tinyllama; then
+            echo "✅ Successfully pulled tinyllama on attempt $attempt"
+            break
+          else
+            echo "❌ Failed to pull tinyllama on attempt $attempt"
+            if [ $attempt -eq 3 ]; then
+              echo "⚠️ All attempts failed, trying alternative model"
+              timeout 300 ollama pull phi3-mini || {
+                echo "❌ Alternative model pull also failed"
+                ollama list
+              }
+            fi
+            sleep 10
+          fi
+        done
+        
+        echo "📋 Available models after pull:"
         ollama list
+        
+        # Verify the model is actually usable
+        echo "🧪 Testing model functionality:"
+        if ollama list | grep -q "tinyllama"; then
+          ollama run tinyllama "Say OK" || echo "⚠️ tinyllama test failed"
+        elif ollama list | grep -q "phi3-mini"; then
+          ollama run phi3-mini "Say OK" || echo "⚠️ phi3-mini test failed"
+        else
+          echo "❌ No suitable models available"
+        fi
       
     - name: Verify Ollama setup
       run: |

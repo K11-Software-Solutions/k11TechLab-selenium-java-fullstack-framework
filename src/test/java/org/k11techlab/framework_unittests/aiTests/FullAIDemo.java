@@ -42,6 +42,9 @@ public class FullAIDemo extends BaseSeleniumTest {
             } else {
                 Log.info("⚠️ Ollama not available, using fallback client");
                 System.out.println("⚠️ AI NOT AVAILABLE - using fallback client");
+                
+                // Show detailed diagnostics when AI is not available
+                System.out.println("\n" + ollamaClient.getDiagnostics());
             }
             System.out.println("=== SETUP COMPLETE ===");
             

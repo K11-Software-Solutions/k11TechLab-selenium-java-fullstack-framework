@@ -3,6 +3,7 @@ package org.k11techlab.framework.ai.ollama;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
@@ -147,27 +148,149 @@ public class OllamaClient {
     }
     
     /**
-     * Test connection to Ollama
+     * Test connection to Ollama with enhanced diagnostics
      */
     public boolean isAvailable() {
         try {
+            Log.info("🔍 AI availability check starting...");
+            System.out.println("🔍 Testing Ollama connection to: " + baseUrl + " with model: " + model);
+            
+            // First, test basic connectivity
+            if (!testBasicConnectivity()) {
+                System.out.println("❌ Basic connectivity failed to Ollama service");
+                return false;
+            }
+            
+            // Then test model availability
+            if (!testModelAvailability()) {
+                System.out.println("❌ Model '" + model + "' not available");
+                return false;
+            }
+            
+            // Finally, test actual generation
             Log.info("Quick AI availability check for model: " + model);
-            // Quick test with very short prompt
             String response = callOllama("Say OK");
             boolean available = response != null && response.toLowerCase().contains("ok");
-            Log.info("AI availability: " + available + " (model: " + model + ")");
+            
+            if (available) {
+                Log.info("✅ AI availability: " + available + " (model: " + model + ")");
+                System.out.println("✅ Ollama AI fully operational with model: " + model);
+            } else {
+                Log.info("❌ AI generation test failed (model: " + model + ")");
+                System.out.println("❌ AI generation test failed - response: " + response);
+            }
+            
             return available;
         } catch (Exception e) {
-            Log.info("AI not available: " + e.getMessage() + " (model: " + model + ")");
+            String error = "AI not available: " + e.getMessage() + " (model: " + model + ")";
+            Log.info(error);
+            System.out.println("❌ " + error);
+            e.printStackTrace();
             return false;
         }
     }
     
     /**
-     * Get client status
+     * Test basic connectivity to Ollama service
+     */
+    private boolean testBasicConnectivity() {
+        try {
+            HttpGet get = new HttpGet(baseUrl + "/api/tags");
+            
+            org.apache.hc.client5.http.config.RequestConfig requestConfig = 
+                org.apache.hc.client5.http.config.RequestConfig.custom()
+                    .setConnectionRequestTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                    .setResponseTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                    .build();
+            get.setConfig(requestConfig);
+            
+            HttpClientResponseHandler<Boolean> responseHandler = response -> {
+                int status = response.getCode();
+                System.out.println("🔗 Ollama connectivity test - Status: " + status);
+                return status >= 200 && status < 300;
+            };
+            
+            return httpClient.execute(get, responseHandler);
+        } catch (Exception e) {
+            System.out.println("🔗 Connectivity test failed: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Test if the specified model is available
+     */
+    private boolean testModelAvailability() {
+        try {
+            HttpGet get = new HttpGet(baseUrl + "/api/tags");
+            
+            HttpClientResponseHandler<Boolean> responseHandler = response -> {
+                try {
+                    String responseBody = EntityUtils.toString(response.getEntity());
+                    System.out.println("📋 Available models response: " + responseBody);
+                    
+                    JsonNode jsonResponse = objectMapper.readTree(responseBody);
+                    JsonNode models = jsonResponse.get("models");
+                    
+                    if (models != null && models.isArray()) {
+                        for (JsonNode modelNode : models) {
+                            String modelName = modelNode.get("name").asText();
+                            System.out.println("📦 Found model: " + modelName);
+                            if (modelName.startsWith(model)) {
+                                System.out.println("✅ Target model '" + model + "' found!");
+                                return true;
+                            }
+                        }
+                    }
+                    
+                    System.out.println("❌ Target model '" + model + "' not found in available models");
+                    return false;
+                    
+                } catch (Exception e) {
+                    System.out.println("❌ Failed to parse models response: " + e.getMessage());
+                    return false;
+                }
+            };
+            
+            return httpClient.execute(get, responseHandler);
+        } catch (Exception e) {
+            System.out.println("📋 Model availability test failed: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Get client status with detailed information
      */
     public String getStatus() {
-        return "OllamaClient - Model: " + model + ", Available: " + isAvailable();
+        try {
+            boolean available = isAvailable();
+            return String.format("OllamaClient - URL: %s, Model: %s, Available: %s", 
+                baseUrl, model, available);
+        } catch (Exception e) {
+            return String.format("OllamaClient - URL: %s, Model: %s, Error: %s", 
+                baseUrl, model, e.getMessage());
+        }
+    }
+    
+    /**
+     * Get detailed diagnostic information
+     */
+    public String getDiagnostics() {
+        StringBuilder diag = new StringBuilder();
+        diag.append("=== OLLAMA CLIENT DIAGNOSTICS ===\n");
+        diag.append("Base URL: ").append(baseUrl).append("\n");
+        diag.append("Target Model: ").append(model).append("\n");
+        
+        try {
+            diag.append("Basic Connectivity: ").append(testBasicConnectivity() ? "✅ OK" : "❌ FAILED").append("\n");
+            diag.append("Model Available: ").append(testModelAvailability() ? "✅ OK" : "❌ FAILED").append("\n");
+        } catch (Exception e) {
+            diag.append("Diagnostics Error: ").append(e.getMessage()).append("\n");
+        }
+        
+        diag.append("===============================");
+        return diag.toString();
     }
     
     /**

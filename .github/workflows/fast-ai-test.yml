@@ -78,12 +78,33 @@ jobs:
           sleep 2
         done
         
-        # Pull tiny model for speed
+        # Pull tiny model for speed with enhanced retry
         echo "📥 Pulling tinyllama..."
-        timeout 180 ollama pull tinyllama
+        
+        for attempt in {1..2}; do
+          echo "Attempt $attempt to pull tinyllama..."
+          if timeout 180 ollama pull tinyllama; then
+            echo "✅ Successfully pulled tinyllama on attempt $attempt"
+            break
+          else
+            echo "❌ Failed on attempt $attempt"
+            if [ $attempt -eq 2 ]; then
+              echo "⚠️ Using any available models"
+            fi
+            sleep 5
+          fi
+        done
         
         echo "📋 Models available:"
         ollama list
+        
+        # Test model functionality
+        echo "🧪 Testing model:"
+        if ollama list | grep -q "tinyllama"; then
+          ollama run tinyllama "Say OK"
+        else
+          echo "⚠️ tinyllama not available"
+        fi
     
     - name: Run Fast AI Test
       run: |

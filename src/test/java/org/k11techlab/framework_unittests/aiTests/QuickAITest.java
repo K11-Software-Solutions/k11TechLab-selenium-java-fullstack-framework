@@ -72,6 +72,7 @@ public class QuickAITest extends BaseSeleniumTest {
                 System.out.println("❌ AI client is null");
             } else {
                 System.out.println("❌ AI client not available: " + aiClient.getStatus());
+                System.out.println("\n" + aiClient.getDiagnostics());
             }
         }
         System.out.println("=== QUICK AI TEST COMPLETE ===");
