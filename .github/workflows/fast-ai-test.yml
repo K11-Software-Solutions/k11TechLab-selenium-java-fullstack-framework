@@ -1,0 +1,61 @@
+name: Fast AI Tests
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'src/main/java/org/k11techlab/framework/ai/**'
+      - 'src/test/java/org/k11techlab/framework_unittests/aiTests/**'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  quick-ai-test:
+    name: Quick AI Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+    
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    
+    - name: Set up Chrome (headless)
+      uses: browser-actions/setup-chrome@v1
+      with:
+        chrome-version: stable
+    
+    - name: Install ChromeDriver
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y chromium-chromedriver
+        sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
+    
+    - name: Compile and test compilation
+      run: |
+        mvn clean compile test-compile -q
+    
+    - name: Run AI fallback tests only (no Ollama needed)
+      run: |
+        mvn test -Dtest="SimpleAIDemo" \
+          -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver \
+          -Djava.awt.headless=true \
+          -Dheadless=true
+    
+    - name: Verify AI framework integrity
+      run: |
+        echo "✅ AI framework compiled successfully"
+        echo "✅ SimpleAIClient working"
+        echo "✅ Framework ready for Ollama integration"

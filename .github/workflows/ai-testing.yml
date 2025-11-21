@@ -1,0 +1,265 @@
+name: AI Testing Assistant CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  test-without-ai:
+    name: Standard Tests (No AI)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+    
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    
+    - name: Set up Chrome
+      uses: browser-actions/setup-chrome@v1
+      with:
+        chrome-version: stable
+    
+    - name: Download ChromeDriver
+      run: |
+        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f3 | cut -d '.' -f1-3)
+        wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}/chromedriver_linux64.zip"
+        unzip chromedriver.zip
+        sudo mv chromedriver /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
+    
+    - name: Run standard tests (excluding AI tests)
+      run: |
+        mvn clean test -Dtest='!org.k11techlab.framework_unittests.aiTests.**' \
+          -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver \
+          -Dheadless=true
+
+  test-with-ai:
+    name: AI Tests with Ollama
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+    
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    
+    - name: Set up Chrome
+      uses: browser-actions/setup-chrome@v1
+      with:
+        chrome-version: stable
+    
+    - name: Setup ChromeDriver
+      run: |
+        # Get Chrome version
+        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f3 | cut -d '.' -f1-3)
+        echo "Chrome version: $CHROME_VERSION"
+        
+        # Download and setup ChromeDriver with fallback
+        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}" || echo "114.0.5735.90")
+        echo "ChromeDriver version: $CHROMEDRIVER_VERSION"
+        
+        wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" || {
+          echo "Fallback: using Ubuntu package manager"
+          sudo apt-get update && sudo apt-get install -y chromium-chromedriver
+          sudo ln -sf /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
+        }
+        
+        if [ -f chromedriver.zip ]; then
+          unzip chromedriver.zip
+          sudo mv chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
+        fi
+        
+        # Verify installation
+        chromedriver --version
+        google-chrome --version
+    
+    - name: Install Ollama
+      run: |
+        curl -fsSL https://ollama.ai/install.sh | sh
+        
+    - name: Start Ollama service
+      run: |
+        # Start Ollama in background
+        nohup ollama serve > ollama.log 2>&1 &
+        echo "Ollama PID: $!"
+        
+        # Wait for Ollama to be ready (GitHub Actions compatible)
+        for i in {1..30}; do
+          if curl -f http://localhost:11434/api/tags >/dev/null 2>&1; then
+            echo "✅ Ollama is ready!"
+            break
+          fi
+          echo "⏳ Waiting for Ollama... ($i/30)"
+          sleep 2
+        done
+        
+        # Verify Ollama is actually running
+        if ! curl -f http://localhost:11434/api/tags >/dev/null 2>&1; then
+          echo "❌ Ollama failed to start"
+          cat ollama.log
+          exit 1
+        fi
+      
+    - name: Pull AI model
+      run: |
+        # Pull a smaller, faster model for CI with timeout
+        echo "📥 Pulling tinyllama model..."
+        timeout 300 ollama pull tinyllama || {
+          echo "❌ Failed to pull tinyllama, trying phi3-mini"
+          timeout 300 ollama pull phi3-mini || {
+            echo "❌ Model pull failed, using existing models"
+            ollama list
+          }
+        }
+        
+        echo "📋 Available models:"
+        ollama list
+      
+    - name: Verify Ollama setup
+      run: |
+        curl http://localhost:11434/api/tags
+        ollama list
+    
+    - name: Create AI test configuration
+      run: |
+        # Create test resources directory if it doesn't exist
+        mkdir -p src/test/resources
+        
+        # Create AI test configuration
+        echo "ai.model=tinyllama" > src/test/resources/ai-test.properties
+        echo "ai.timeout=120000" >> src/test/resources/ai-test.properties
+        echo "ai.enabled=true" >> src/test/resources/ai-test.properties
+        echo "ollama.host=http://localhost:11434" >> src/test/resources/ai-test.properties
+        
+        echo "📁 Created AI test configuration:"
+        cat src/test/resources/ai-test.properties
+    
+    - name: Run AI tests
+      run: |
+        # Final verification before running tests
+        echo "🔍 Pre-test verification:"
+        curl -f http://localhost:11434/api/tags || exit 1
+        chromedriver --version || exit 1
+        
+        # Run AI tests with comprehensive system properties
+        mvn test -Dtest="org.k11techlab.framework_unittests.aiTests.**" \
+          -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver \
+          -Dheadless=true \
+          -Dai.model=tinyllama \
+          -Dollama.host=http://localhost:11434 \
+          -Djava.awt.headless=true \
+          -Dtest.parallel=false
+      env:
+        OLLAMA_HOST: http://localhost:11434
+        DISPLAY: :99
+    
+    - name: Upload AI test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: ai-test-results
+        path: |
+          target/surefire-reports/
+          target/site/
+    
+    - name: Generate AI test report
+      if: always()
+      run: |
+        echo "## 🤖 AI Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "AI tests completed with Ollama + tinyllama model" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Check for test results
+        if [ -f target/surefire-reports/TEST-*.xml ]; then
+          echo "✅ AI test reports generated" >> $GITHUB_STEP_SUMMARY
+          
+          # Count tests
+          TOTAL_TESTS=$(grep -o 'tests="[0-9]*"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]*' | awk '{sum+=$1} END {print sum}')
+          FAILED_TESTS=$(grep -o 'failures="[0-9]*"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]*' | awk '{sum+=$1} END {print sum}')
+          
+          echo "📊 **Test Summary:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Total Tests: ${TOTAL_TESTS:-0}" >> $GITHUB_STEP_SUMMARY
+          echo "- Failed Tests: ${FAILED_TESTS:-0}" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ No test reports found" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        # Show Ollama status
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "🔧 **Environment:**" >> $GITHUB_STEP_SUMMARY
+        echo "- Ollama Status: $(curl -f http://localhost:11434/api/tags >/dev/null 2>&1 && echo 'Running' || echo 'Stopped')" >> $GITHUB_STEP_SUMMARY
+        echo "- Available Models: $(ollama list | tail -n +2 | wc -l)" >> $GITHUB_STEP_SUMMARY
+
+  test-ai-fallback:
+    name: AI Fallback Tests (No Ollama)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+    
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    
+    - name: Set up Chrome
+      uses: browser-actions/setup-chrome@v1
+      with:
+        chrome-version: stable
+    
+    - name: Download ChromeDriver
+      run: |
+        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f3 | cut -d '.' -f1-3)
+        wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}/chromedriver_linux64.zip"
+        unzip chromedriver.zip
+        sudo mv chromedriver /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
+    
+    - name: Run AI fallback tests (SimpleAIClient only)
+      run: |
+        mvn test -Dtest="org.k11techlab.framework_unittests.aiTests.SimpleAIDemo" \
+          -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver \
+          -Dheadless=true
+    
+    - name: Generate fallback test report
+      if: always()
+      run: |
+        echo "## 🔧 AI Fallback Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "AI fallback tests completed using SimpleAIClient" >> $GITHUB_STEP_SUMMARY
+        echo "These tests verify AI framework works without Ollama" >> $GITHUB_STEP_SUMMARY
