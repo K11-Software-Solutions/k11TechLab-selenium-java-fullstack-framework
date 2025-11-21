@@ -14,6 +14,10 @@
 **Problem**: `IllegalStateException: It must be an executable file: .../drivers/chromedriver.exe` on Linux
 **Solution**: Added platform-aware ChromeDriver path detection with system property support
 
+### **AI Test Element Selectors** ✅ FIXED
+**Problem**: `NoSuchElementException: Unable to locate element: #searchInput` on Google
+**Solution**: Updated AI tests to use correct Google search elements (By.name("q") instead of Wikipedia selectors)
+
 ---
 
 ## 🔧 **Previous Fixes Applied to GitHub Actions Workflow**
@@ -160,6 +164,7 @@ git push origin main
 | Ollama timeout | Extended wait loop with better error handling |
 | ChromeDriver 404 | Chrome for Testing API with fallbacks |
 | ChromeDriver path | Platform-aware path detection with system property support |
+| AI test selectors | Updated to use Google search elements (By.name("q")) |
 | Model pull timeout | 5-minute timeout with alternative models |
 | Deprecated actions | Updated to latest v4 versions |
 | Cache performance | actions/cache@v4 for better caching |
