@@ -20,9 +20,11 @@ public class SimpleAIDemo extends BaseSeleniumTest {
     
     @BeforeMethod
     public void setup() {
+        System.out.println("\n=== SIMPLE AI DEMO SETUP ===");
         aiClient = new SimpleAIClient();
         getDriver().get("https://www.google.com");
         Log.info("Starting Simple AI Demo Test with Google Search");
+        System.out.println("✅ Simple AI Demo Setup Complete");
     }
     
     @Test(description = "Demo AI locator suggestions without external dependencies")

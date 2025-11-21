@@ -58,16 +58,81 @@ jobs:
       run: |
         mvn clean compile test-compile -q
     
-    - name: Run AI fallback tests only (no Ollama needed)
+    - name: Install Ollama
       run: |
-        mvn test -Dtest="SimpleAIDemo" \
-          -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver \
-          -Djava.awt.headless=true \
-          -Dheadless=true \
-          -Dselenium.suppress.cdp.warnings=true
+        echo "🚀 Installing Ollama..."
+        curl -fsSL https://ollama.ai/install.sh | sh
+        
+    - name: Start Ollama and pull model
+      run: |
+        echo "🎯 Starting Ollama service..."
+        nohup ollama serve > ollama.log 2>&1 &
+        
+        # Wait for Ollama
+        for i in {1..20}; do
+          if curl -f http://localhost:11434/api/tags >/dev/null 2>&1; then
+            echo "✅ Ollama ready!"
+            break
+          fi
+          echo "⏳ Waiting... ($i/20)"
+          sleep 2
+        done
+        
+        # Pull tiny model for speed
+        echo "📥 Pulling tinyllama..."
+        timeout 180 ollama pull tinyllama
+        
+        echo "📋 Models available:"
+        ollama list
     
-    - name: Verify AI framework integrity
+    - name: Run Fast AI Test
       run: |
-        echo "✅ AI framework compiled successfully"
-        echo "✅ SimpleAIClient working"
-        echo "✅ Framework ready for Ollama integration"
+        echo "🧪 Running single AI test for verification..."
+        
+        # Test direct Ollama first
+        echo "🔍 Direct Ollama test:"
+        curl -X POST http://localhost:11434/api/generate \
+          -H "Content-Type: application/json" \
+          -d '{"model": "tinyllama", "prompt": "Say OK", "stream": false}' | jq -r '.response'
+        
+        # Run just the quick test with enhanced logging
+        mvn test -Dtest=QuickAITest \
+          -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver \
+          -Dheadless=true \
+          -Dai.model=tinyllama \
+          -Dollama.host=http://localhost:11434 \
+          -Djava.awt.headless=true \
+          -Dselenium.suppress.cdp.warnings=true \
+          -Dsurefire.useSystemClassLoader=false \
+          -X | tee fast-test-output.log
+        
+        echo "📊 Quick test completed! Analyzing results..."
+        
+        # Show key outputs
+        echo "=== AI TEST OUTPUTS ==="
+        grep -E "(🤖|✅|❌|🔍|⚠️)" fast-test-output.log || echo "No AI emoji outputs found"
+        
+        echo "=== TEST RESULTS ==="
+        ls -la target/surefire-reports/ || echo "No surefire reports"
+        
+        # Show any test results
+        if [ -d "target/surefire-reports" ]; then
+          for xml in target/surefire-reports/TEST-*.xml; do
+            if [ -f "$xml" ]; then
+              echo "📋 $(basename $xml):"
+              grep -o 'tests="[0-9]*" errors="[0-9]*" failures="[0-9]*"' "$xml" || echo "No stats found"
+            fi
+          done
+        fi
+      env:
+        OLLAMA_HOST: http://localhost:11434
+    
+    - name: Upload fast test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: fast-ai-test-results
+        path: |
+          target/surefire-reports/
+          fast-test-output.log
+          ollama.log

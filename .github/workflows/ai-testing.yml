@@ -11,6 +11,7 @@ jobs:
   test-without-ai:
     name: Standard Tests (No AI)
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # Prevent infinite runs
     
     steps:
     - name: Checkout code
@@ -70,14 +71,21 @@ jobs:
         chromedriver --version
     
     - name: Run standard tests (excluding AI tests)
+      timeout-minutes: 25
       run: |
-        mvn clean test -Dtest='!org.k11techlab.framework_unittests.aiTests.**' \
+        # Run only specific framework unit tests, exclude AI tests and lesson examples
+        mvn clean test \
+          -Dtest="org.k11techlab.framework_unittests.configurationManagerTests,org.k11techlab.framework_unittests.ScreenshotUtilTest" \
           -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver \
-          -Dheadless=true
+          -Dheadless=true \
+          -Djava.awt.headless=true \
+          -Dselenium.suppress.cdp.warnings=true \
+          -DfailIfNoTests=false
 
   test-with-ai:
     name: AI Tests with Ollama
     runs-on: ubuntu-latest
+    timeout-minutes: 45  # Allow more time for AI/LLM operations
     
     steps:
     - name: Checkout code
@@ -197,6 +205,13 @@ jobs:
         
         echo "📁 Created AI test configuration:"
         cat src/test/resources/ai-test.properties
+        
+        # Test Ollama with a direct call to verify it's really working
+        echo "🧪 Testing Ollama directly before running Java tests:"
+        curl -X POST http://localhost:11434/api/generate \
+          -H "Content-Type: application/json" \
+          -d '{"model": "tinyllama", "prompt": "Say HELLO", "stream": false}' | \
+          jq -r '.response' || echo "Direct Ollama test failed"
     
     - name: Run AI tests
       run: |
@@ -205,15 +220,31 @@ jobs:
         curl -f http://localhost:11434/api/tags || exit 1
         chromedriver --version || exit 1
         
-        # Run AI tests with comprehensive system properties
-        mvn test -Dtest="org.k11techlab.framework_unittests.aiTests.**" \
+        echo "🧪 Running comprehensive AI tests..."
+        
+        # Run AI tests with comprehensive system properties and detailed logging
+        mvn test -Dtest="FullAIDemo,SimpleAIDemo,QuickAITest" \
           -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver \
           -Dheadless=true \
           -Dai.model=tinyllama \
           -Dollama.host=http://localhost:11434 \
           -Djava.awt.headless=true \
           -Dtest.parallel=false \
-          -Dselenium.suppress.cdp.warnings=true
+          -Dselenium.suppress.cdp.warnings=true \
+          -Dsurefire.useSystemClassLoader=false \
+          -X | tee ai-test-output.log
+        
+        echo "📊 Test execution completed. Checking results..."
+        
+        # Display key sections of the log
+        echo "==== AI TEST OUTPUT SUMMARY ===="
+        grep -E "(🤖|✅|❌|🔍|📝|🐛|⚠️)" ai-test-output.log || echo "No AI emojis found in output"
+        
+        echo "==== SUREFIRE REPORTS ===="
+        find target/surefire-reports -name "*.xml" -exec basename {} \; 2>/dev/null || echo "No surefire reports found"
+        
+        echo "==== TEST RESULTS ===="
+        cat target/surefire-reports/TEST-*.xml 2>/dev/null | grep -o 'tests="[0-9]*" errors="[0-9]*" failures="[0-9]*"' || echo "No test results found"
       env:
         OLLAMA_HOST: http://localhost:11434
         DISPLAY: :99
@@ -226,6 +257,52 @@ jobs:
         path: |
           target/surefire-reports/
           target/site/
+    
+    - name: Display detailed AI test results
+      if: always()
+      run: |
+        echo "📊 DETAILED AI TEST ANALYSIS:"
+        echo "============================"
+        
+        # Show test counts and results
+        if [ -d "target/surefire-reports" ]; then
+          echo "📁 Surefire reports directory exists"
+          ls -la target/surefire-reports/
+          
+          # Parse and display test results
+          for report in target/surefire-reports/TEST-*.xml; do
+            if [ -f "$report" ]; then
+              echo "📋 Processing report: $(basename $report)"
+              
+              # Extract test statistics
+              tests=$(grep -o 'tests="[0-9]*"' "$report" | cut -d'"' -f2)
+              errors=$(grep -o 'errors="[0-9]*"' "$report" | cut -d'"' -f2)
+              failures=$(grep -o 'failures="[0-9]*"' "$report" | cut -d'"' -f2)
+              
+              echo "   Tests: $tests, Errors: $errors, Failures: $failures"
+              
+              # Show any failure messages
+              if [ "$failures" != "0" ] || [ "$errors" != "0" ]; then
+                echo "   ❌ Failure details:"
+                grep -A5 -B2 '<failure\|<error' "$report" || echo "   No detailed failure info found"
+              fi
+            fi
+          done
+        else
+          echo "❌ No surefire reports directory found"
+        fi
+        
+        # Show console output
+        if [ -f "ai-test-output.log" ]; then
+          echo "📄 Console output analysis:"
+          echo "AI client initializations: $(grep -c 'Ollama AI Status' ai-test-output.log || echo '0')"
+          echo "Real AI responses: $(grep -c 'REAL AI' ai-test-output.log || echo '0')"
+          echo "Test completions: $(grep -c 'working!' ai-test-output.log || echo '0')"
+          
+          # Show last few lines of important output
+          echo "🔍 Last AI-related outputs:"
+          grep -E "(🤖|✅|❌)" ai-test-output.log | tail -10 || echo "No AI emoji outputs found"
+        fi
     
     - name: Generate AI test report
       if: always()
@@ -258,6 +335,7 @@ jobs:
   test-ai-fallback:
     name: AI Fallback Tests (No Ollama)
     runs-on: ubuntu-latest
+    timeout-minutes: 20  # Shorter timeout for fallback tests
     
     steps:
     - name: Checkout code

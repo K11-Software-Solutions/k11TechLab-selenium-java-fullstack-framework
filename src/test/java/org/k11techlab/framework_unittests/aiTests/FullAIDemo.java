@@ -21,6 +21,9 @@ public class FullAIDemo extends BaseSeleniumTest {
     @BeforeMethod
     public void setup() {
         try {
+            System.out.println("\n=== FULL AI DEMO SETUP ===");
+            System.out.println("🚀 Initializing AI Testing Assistant...");
+            
             // Initialize Ollama client with real LLM (supports system property overrides for CI)
             ollamaClient = new OllamaClient(); // Uses system properties or defaults
             fallbackClient = new SimpleAIClient();
@@ -28,25 +31,36 @@ public class FullAIDemo extends BaseSeleniumTest {
             // Navigate to test page
             getDriver().get("https://www.google.com");
             Log.info("🚀 Starting Full AI Testing Demo with REAL Ollama LLM on Google Search!");
+            System.out.println("🌐 Navigated to Google Search for AI testing");
             
-            // Test AI connection
+            // Test AI connection with detailed output
+            System.out.println("🔍 Testing AI connection...");
             if (ollamaClient.isAvailable()) {
-                Log.info("✅ Ollama AI Status: " + ollamaClient.getStatus());
+                String status = ollamaClient.getStatus();
+                Log.info("✅ Ollama AI Status: " + status);
+                System.out.println("✅ AI AVAILABLE: " + status);
             } else {
                 Log.info("⚠️ Ollama not available, using fallback client");
+                System.out.println("⚠️ AI NOT AVAILABLE - using fallback client");
             }
+            System.out.println("=== SETUP COMPLETE ===");
             
         } catch (Exception e) {
-            Log.error("Failed to initialize Ollama client: " + e.getMessage());
+            String error = "Failed to initialize Ollama client: " + e.getMessage();
+            Log.error(error);
+            System.out.println("❌ SETUP ERROR: " + error);
+            e.printStackTrace();
             ollamaClient = null;
         }
     }
     
     @Test(timeOut = 120000) // 120 second timeout for LLM responses
     public void testAIEnhancedLocatorGeneration() {
+        System.out.println("\n=== TEST: AI LOCATOR GENERATION ===");
         Log.info("🔍 Testing AI-Enhanced Locator Generation with Real LLM");
         
         if (ollamaClient != null && ollamaClient.isAvailable()) {
+            System.out.println("🤖 Requesting locator suggestions from REAL AI...");
             // Test AI-generated locators with real LLM
             String suggestion = ollamaClient.generateLocatorSuggestion("Google search input field and search button");
             Log.info("🤖 REAL AI Locator Suggestions for Google Search:\n" + suggestion);
@@ -57,16 +71,20 @@ public class FullAIDemo extends BaseSeleniumTest {
             System.out.println(suggestion);
             System.out.println("==================================");
             
-            assertNotNull(suggestion);
-            assertTrue(suggestion.length() > 100); // Real AI gives detailed responses
-            assertTrue(suggestion.contains("By.") || suggestion.contains("locator"));
+            assertNotNull(suggestion, "AI suggestion should not be null");
+            assertTrue(suggestion.length() > 100, "Real AI should give detailed responses (got " + suggestion.length() + " chars)");
+            assertTrue(suggestion.contains("By.") || suggestion.contains("locator"), "Response should contain locator information");
             
             Log.info("✅ Real AI locator generation working!");
+            System.out.println("✅ AI LOCATOR TEST PASSED!");
         } else {
             // Fallback to simple client
+            System.out.println("⚠️ AI not available, using fallback client");
             String suggestion = fallbackClient.generateSuggestion("Generate locator for search input field");
             Log.info("⚠️ Using fallback client: " + suggestion);
+            System.out.println("⚠️ FALLBACK RESPONSE: " + suggestion);
         }
+        System.out.println("=== LOCATOR TEST COMPLETE ===");
     }
     
     @Test(timeOut = 120000) // 120 second timeout for LLM responses
