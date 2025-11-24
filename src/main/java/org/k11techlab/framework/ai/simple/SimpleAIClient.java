@@ -1,12 +1,13 @@
 package org.k11techlab.framework.ai.simple;
 
 import org.k11techlab.framework.selenium.webuitestengine.logger.Log;
+import org.k11techlab.framework.ai.llm.LLMInterface;
 
 /**
  * Simple AI client placeholder for quick testing without external dependencies.
  * This allows the framework to compile and run basic tests while you set up the full AI system.
  */
-public class SimpleAIClient {
+public class SimpleAIClient implements LLMInterface {
     
     private boolean enabled = false;
     
@@ -82,5 +83,27 @@ public class SimpleAIClient {
      */
     public String getStatus() {
         return "Simple AI Client - Enabled: " + enabled;
+    }
+    
+    @Override
+    public String getModelInfo() {
+        return "Simple AI Client - Predefined responses";
+    }
+    
+    @Override
+    public String generateResponse(String prompt) {
+        return generateSuggestion(prompt);
+    }
+    
+    @Override
+    public String generateResponse(String prompt, float temperature, int maxTokens) {
+        // Simple AI doesn't support parameters, use basic generation
+        return generateSuggestion(prompt);
+    }
+    
+    @Override
+    public void close() {
+        // Nothing to close for simple client
+        Log.info("Simple AI client closed");
     }
 }

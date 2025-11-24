@@ -1,8 +1,8 @@
 package org.k11techlab.framework_unittests.aiTests;
 
 import org.k11techlab.framework.selenium.webuitestbase.BaseSeleniumTest;
-import org.k11techlab.framework.ai.simple.SimpleAIClient;
-import org.k11techlab.framework.ai.ollama.OllamaClient;
+import org.k11techlab.framework.ai.manager.AIProviderManager;
+import org.k11techlab.framework.ai.llm.LLMInterface;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.openqa.selenium.By;
@@ -10,13 +10,13 @@ import org.k11techlab.framework.selenium.webuitestengine.logger.Log;
 import static org.testng.Assert.*;
 
 /**
- * Full AI Testing Demo with Real Ollama Integration!
- * This test demonstrates the complete AI Testing Assistant capabilities using local LLM.
+ * Full AI Testing Demo with Multi-Provider Integration!
+ * This test demonstrates the complete AI Testing Assistant capabilities using Ollama, LM Studio, and fallback options.
  */
 public class FullAIDemo extends BaseSeleniumTest {
     
-    private OllamaClient ollamaClient;
-    private SimpleAIClient fallbackClient;
+    private AIProviderManager aiManager;
+    private LLMInterface aiProvider;
     
     @BeforeMethod
     public void setup() {

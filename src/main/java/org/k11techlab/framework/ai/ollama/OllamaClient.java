@@ -10,6 +10,7 @@ import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.k11techlab.framework.selenium.webuitestengine.logger.Log;
+import org.k11techlab.framework.ai.llm.LLMInterface;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -21,7 +22,7 @@ import java.util.Map;
  * Ollama client for local LLM integration with K11 TechLab framework.
  * Provides AI-powered test generation, locator suggestions, and debugging assistance.
  */
-public class OllamaClient {
+public class OllamaClient implements LLMInterface {
     
     private final String baseUrl;
     private final String model;
@@ -296,11 +297,32 @@ public class OllamaClient {
     }
     
     /**
-     * Close HTTP client resources
+     * Close the HTTP client when done
      */
-    public void close() throws IOException {
+    @Override
+    public void close() {
         if (httpClient != null) {
-            httpClient.close();
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                Log.error("Error closing Ollama client: " + e.getMessage());
+            }
         }
+    }
+    
+    @Override
+    public String getModelInfo() {
+        return String.format("Ollama - Model: %s, URL: %s", model, baseUrl);
+    }
+    
+    @Override
+    public String generateResponse(String prompt) {
+        return generateSuggestion(prompt);
+    }
+    
+    @Override
+    public String generateResponse(String prompt, float temperature, int maxTokens) {
+        // Use existing generateSuggestion method (SimpleAI doesn't support parameters)
+        return generateSuggestion(prompt);
     }
 }
