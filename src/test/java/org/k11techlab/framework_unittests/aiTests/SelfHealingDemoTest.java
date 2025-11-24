@@ -36,15 +36,27 @@ public class SelfHealingDemoTest extends BaseSeleniumTest {
         System.out.println("\n🔧 Setting up Self-Healing Demo Environment...");
         Log.info("Initializing AI-powered self-healing test environment");
         
+        // Check if running in CI environment
+        String testMode = System.getProperty("ai.test.mode", "default");
+        String ciEnvironment = System.getenv("CI");
+        boolean isCI = "true".equals(ciEnvironment) || testMode.contains("fallback") || testMode.contains("mock");
+        
+        System.out.println("🏗️ Environment: " + (isCI ? "CI/GitHub Actions" : "Local Development"));
+        System.out.println("🎯 Test Mode: " + testMode);
+        
         try {
-            // Initialize AI provider manager
-            aiManager = new AIProviderManager();
+            // Initialize AI provider manager with fallback enabled for CI
+            aiManager = new AIProviderManager(isCI);
             aiProvider = aiManager.getBestProvider();
             
             if (aiProvider != null) {
                 elementHealer = new AIElementHealer(aiProvider, driver.get());
                 System.out.println("✅ AI Element Healer initialized successfully");
                 System.out.println("🤖 AI Provider: " + aiProvider.getModelInfo());
+                
+                if (isCI) {
+                    System.out.println("🏗️ CI Environment detected - using fallback-friendly configuration");
+                }
             } else {
                 System.out.println("⚠️ No AI provider available - self-healing disabled");
             }
