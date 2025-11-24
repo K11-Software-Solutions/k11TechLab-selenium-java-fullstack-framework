@@ -14,7 +14,7 @@ This guide shows how to integrate AI-powered testing tools with your existing K1
 
 ## 🔍 Current Framework Analysis
 
-Your framework already has excellent foundations for AI integration:
+This framework already has excellent foundations for AI integration:
 
 ### Existing Strengths
 - **Modular Architecture**: Well-structured with separate layers for WebUI, API, and database testing
