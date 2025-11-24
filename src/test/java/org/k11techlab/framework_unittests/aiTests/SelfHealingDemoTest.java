@@ -38,24 +38,48 @@ public class SelfHealingDemoTest extends BaseSeleniumTest {
         
         // Check if running in CI environment
         String testMode = System.getProperty("ai.test.mode", "default");
+        String aiProvider = System.getProperty("ai.provider", "auto");
+        String aiModel = System.getProperty("ai.model", "default");
         String ciEnvironment = System.getenv("CI");
         boolean isCI = "true".equals(ciEnvironment) || testMode.contains("fallback") || testMode.contains("mock");
         
         System.out.println("🏗️ Environment: " + (isCI ? "CI/GitHub Actions" : "Local Development"));
         System.out.println("🎯 Test Mode: " + testMode);
+        System.out.println("🤖 AI Provider: " + aiProvider);
+        if (!"default".equals(aiModel)) {
+            System.out.println("📦 AI Model: " + aiModel);
+        }
         
         try {
             // Initialize AI provider manager with fallback enabled for CI
             aiManager = new AIProviderManager(isCI);
-            aiProvider = aiManager.getBestProvider();
             
-            if (aiProvider != null) {
-                elementHealer = new AIElementHealer(aiProvider, driver.get());
+            // Handle specific provider requests from system properties
+            if ("ollama".equals(testMode) || "ollama".equals(aiProvider)) {
+                System.out.println("🦙 Requesting Ollama provider specifically");
+                this.aiProvider = aiManager.getProvider(AIProviderManager.Provider.OLLAMA);
+                if (this.aiProvider == null) {
+                    System.out.println("⚠️ Ollama not available, falling back to best available provider");
+                    this.aiProvider = aiManager.getBestProvider();
+                }
+            } else {
+                this.aiProvider = aiManager.getBestProvider();
+            }
+            
+            if (this.aiProvider != null) {
+                elementHealer = new AIElementHealer(this.aiProvider, driver.get());
                 System.out.println("✅ AI Element Healer initialized successfully");
-                System.out.println("🤖 AI Provider: " + aiProvider.getModelInfo());
+                System.out.println("🤖 Active AI Provider: " + this.aiProvider.getModelInfo());
+                
+                // Test AI provider availability
+                if (this.aiProvider.isAvailable()) {
+                    System.out.println("✅ AI Provider is available and ready");
+                } else {
+                    System.out.println("⚠️ AI Provider availability check failed");
+                }
                 
                 if (isCI) {
-                    System.out.println("🏗️ CI Environment detected - using fallback-friendly configuration");
+                    System.out.println("🏗️ CI Environment detected - using robust configuration");
                 }
             } else {
                 System.out.println("⚠️ No AI provider available - self-healing disabled");
@@ -64,6 +88,7 @@ public class SelfHealingDemoTest extends BaseSeleniumTest {
         } catch (Exception e) {
             Log.error("AI setup failed: " + e.getMessage());
             System.out.println("❌ AI setup failed: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     
