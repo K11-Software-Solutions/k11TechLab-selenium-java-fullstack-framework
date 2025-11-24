@@ -5,7 +5,7 @@
 New to AI-powered testing? Start here:
 
 1. **[🚀 Main Framework Overview](AI_FRAMEWORK_README.md)** - Start here for setup and basic usage
-2. **[🎪 Live Demo Guide](SELF_HEALING_DEMO_GUIDE.md)** - See self-healing in action
+2. **[🎪 Live Demo Guide](testartifacts/docs/AI_Testing_Assistant/Self_Healing/SELF_HEALING_DEMO_GUIDE.md)** - See self-healing in action
 3. **[📖 API Reference](AI_API_REFERENCE.md)** - Detailed API documentation
 
 ## 📋 Documentation Suite
@@ -16,7 +16,7 @@ New to AI-powered testing? Start here:
 
 ### 🎯 Usage Guides
 - **[📖 API Reference](AI_API_REFERENCE.md)** - Complete API documentation with examples
-- **[🎪 Demo & Examples](SELF_HEALING_DEMO_GUIDE.md)** - Live demonstrations and example scripts
+- **[🎪 Demo & Examples](testartifacts/docs/AI_Testing_Assistant/Self_Healing/SELF_HEALING_DEMO_GUIDE.md)** - Live demonstrations and example scripts
 - **[🎯 Best Practices](AI_FRAMEWORK_README.md#-best-practices)** - Proven patterns and recommendations
 
 ### 🚀 Migration & Adoption  
@@ -27,6 +27,11 @@ New to AI-powered testing? Start here:
 - **[🛠️ Troubleshooting Guide](testartifacts/docs/troubleshooting/AI_TROUBLESHOOTING.md)** - Common issues and solutions
 - **[📊 Performance Optimization](testartifacts/docs/troubleshooting/AI_TROUBLESHOOTING.md#-performance-optimization)** - Speed and efficiency tips
 - **[📈 Monitoring & Metrics](AI_ARCHITECTURE.md#-monitoring-and-metrics)** - Track performance and health
+
+### 🚀 CI/CD & Professional Showcase
+- **[🔄 GitHub Actions Integration](testartifacts/docs/GITHUB_ACTIONS_LMSTUDIO_GUIDE.md)** - Run AI tests in CI/CD pipelines
+- **[💼 LinkedIn Professional Article](testartifacts/docs/LINKEDIN_AI_SELFHEALING_ARTICLE.md)** - Share your AI testing expertise
+- **[🏗️ LM Studio Setup Guide](testartifacts/docs/AI_Testing_Assistant/AI_Providers/LMStudio_Setup_Guide.md)** - Complete LM Studio integration
 
 ## 🎪 Interactive Demos
 
@@ -40,6 +45,12 @@ mvn test -Dtest=AIHealingDemoTest
 
 # AI-enhanced selenium tests
 mvn test -Dtest=AIEnhancedSeleniumTest
+
+# LM Studio integration testing
+mvn test -Dtest=LMStudioAITest
+
+# CI/CD testing modes
+mvn test -Dtest=SelfHealingDemoTest -Dai.test.mode=fallback
 ```
 
 ### What Each Demo Shows
@@ -49,6 +60,8 @@ mvn test -Dtest=AIEnhancedSeleniumTest
 | **SelfHealingDemoTest** | Traditional vs AI comparison | • 0% vs 95% success rates<br>• Real-time adaptation<br>• Multi-strategy healing |
 | **AIHealingDemoTest** | Real-world scenarios | • Google search healing<br>• Dynamic elements<br>• Error recovery |
 | **AIEnhancedSeleniumTest** | Advanced features | • Intelligent validation<br>• Context-aware testing<br>• Performance analysis |
+| **LMStudioAITest** | LM Studio integration | • API compatibility<br>• Provider fallback<br>• OpenAI format testing |
+| **CI Fallback Mode** | GitHub Actions testing | • Mock LM Studio<br>• Ollama integration<br>• Multi-provider reliability |
 
 ## 🏆 Success Stories & Metrics
 
@@ -75,11 +88,12 @@ mvn test -Dtest=AIEnhancedSeleniumTest
 - **[LLMInterface](AI_API_REFERENCE.md#llminterface)** - Abstract AI provider interface
 
 ### Supported AI Providers
-| Provider | Status | Performance | Setup |
-|----------|--------|-------------|-------|
-| **Ollama** | ✅ Primary | Excellent | [Setup Guide](AI_FRAMEWORK_README.md#option-a-ollama-recommended) |
-| **LM Studio** | ✅ Secondary | Very Good | [Setup Guide](AI_FRAMEWORK_README.md#option-b-lm-studio) |
-| **Simple AI** | ✅ Fallback | Basic | No setup required |
+| Provider | Status | Performance | Setup | CI/CD Support |
+|----------|--------|-------------|-------|---------------|
+| **Ollama** | ✅ Primary | Excellent | [Setup Guide](AI_FRAMEWORK_README.md#option-a-ollama-recommended) | ✅ GitHub Actions |
+| **LM Studio** | ✅ Secondary | Very Good | [Setup Guide](AI_FRAMEWORK_README.md#option-b-lm-studio) | 🎭 Mock Testing |
+| **Simple AI** | ✅ Fallback | Basic | No setup required | ✅ Always Available |
+| **Mock LM Studio** | 🎭 CI Only | Good | [CI Guide](testartifacts/docs/GITHUB_ACTIONS_LMSTUDIO_GUIDE.md) | ✅ API Testing |
 
 ## 🎯 Use Cases
 
@@ -123,6 +137,18 @@ elementHealer.findElement("add to cart button on product page");
 - [ ] Implement fallback strategies
 - [ ] Train team on best practices
 - [ ] Measure performance improvements
+
+## 📚 Additional Resources
+
+### 🎯 Quick Start & Getting Started
+- **[⚡ AI Quick Start Guide](AI_QUICK_START.md)** - Get up and running in 15 minutes
+- **[📖 AI Testing Assistant Guide](AI_TESTING_ASSISTANT_GUIDE.md)** - Comprehensive assistant overview
+- **[🔄 CI AI Testing Guide](CI_AI_TESTING.md)** - Continuous Integration best practices
+
+### 🛠️ Specialized Setup Guides
+- **[🏗️ LM Studio Integration Summary](testartifacts/docs/AI_Testing_Assistant/AI_Providers/LMStudio_Integration_Summary.md)** - LM Studio overview
+- **[⚙️ Troubleshooting AI Fixes](testartifacts/docs/troubleshooting/TROUBLESHOOTING_AI_FIX.md)** - AI-specific issue resolution
+- **[🔧 ChromeDriver GitHub Actions Fix](testartifacts/docs/troubleshooting/CHROMEDRIVER_GITHUB_ACTIONS_FIX.md)** - CI browser setup
 
 ## 🤝 Community & Support
 
@@ -173,6 +199,6 @@ When seeking help, include:
 
 ---
 
-*Last Updated: November 23, 2025*  
+*Last Updated: November 24, 2025*  
 *Framework Version: 1.0*  
 *Documentation Version: 1.0*
