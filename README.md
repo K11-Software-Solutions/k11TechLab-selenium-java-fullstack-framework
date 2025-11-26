@@ -79,7 +79,7 @@ flowchart TD
    B --> C[AI Integration Layer]
    C --> D1[RAG Engine]
    C --> D2[Self-Healing Engine]
-   D1 --> E1[Embedding Providers\n(OpenAI, HF, Ollama)]
+   D1 --> E1[Embedding Providers (OpenAI, HF, Ollama)]
    D1 --> E2[Embedding Cache]
    D1 --> F[Test Artifacts / Docs / Knowledge Base]
    D2 --> G[Locator Healing / AI Element Recovery]
