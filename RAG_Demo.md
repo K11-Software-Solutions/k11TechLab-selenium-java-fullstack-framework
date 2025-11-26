@@ -37,8 +37,8 @@ Retrieval-Augmented Generation (RAG) is a game-changer for AI-powered search and
 - Only new or modified files trigger fresh embedding calls.
 
 ## See it in action:
-- [RAGComponentsDemo.java (Test Class)](https://github.com/your-org/your-repo/blob/main/src/main/java/org/k11techlab/framework/ai/rag/demo/RAGComponentsDemo.java)
-- [Sample Output (Cache Hits!)](https://github.com/your-org/your-repo/blob/main/RAGComponentsDemo_output.txt)
+* [RAGComponentsDemo.java (Test Class)](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/src/main/java/org/k11techlab/framework/ai/rag/demo/RAGComponentsDemo.java)
+* [Sample Output (Cache Hits!)](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/RAGComponentsDemo_output.txt)
 
 ## Sample Output
 ```text
