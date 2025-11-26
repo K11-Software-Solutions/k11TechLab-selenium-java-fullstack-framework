@@ -75,21 +75,14 @@ Built entirely with open-source libraries, this framework is **fully extensible*
 
 ```mermaid
 flowchart TD
-   A[Test Suite / TestNG / POM] --> B(Core Framework Utilities)
+   A[Test Suite] --> B(Core Framework)
    B --> C[AI Integration Layer]
-   C --> D1[RAG Engine]
-   C --> D2[Self-Healing Engine]
-   D1 --> E1[Embedding Providers (OpenAI, HF, Ollama)]
-   D1 --> E2[Embedding Cache]
-   D1 --> F[Test Artifacts / Docs / Knowledge Base]
-   D2 --> G[Locator Healing / AI Element Recovery]
-   B --> F
-   style C fill:#e0f7fa,stroke:#00796b,stroke-width:2px
-   style D1 fill:#fffde7,stroke:#fbc02d,stroke-width:2px
-   style D2 fill:#fffde7,stroke:#fbc02d,stroke-width:2px
-   style E1 fill:#e1bee7,stroke:#7b1fa2,stroke-width:1.5px
-   style E2 fill:#e1bee7,stroke:#7b1fa2,stroke-width:1.5px
-   style G fill:#ffe0b2,stroke:#e65100,stroke-width:1.5px
+   C --> D[RAG Engine]
+   C --> E[Self-Healing Engine]
+   D --> F[Embedding Providers]
+   D --> G[Embedding Cache]
+   D --> H[Docs/Knowledge Base]
+   E --> I[Locator Healing]
 ```
 
 > *AI Features Integration: Shows how RAG, embedding cache, and self-healing plug into the core automation framework. Render this diagram with Mermaid for a visual overview.*
