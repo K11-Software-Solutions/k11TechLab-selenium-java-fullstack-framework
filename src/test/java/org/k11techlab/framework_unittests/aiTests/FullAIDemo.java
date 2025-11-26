@@ -8,6 +8,9 @@ import org.testng.annotations.BeforeMethod;
 import org.openqa.selenium.By;
 import org.k11techlab.framework.selenium.webuitestengine.logger.Log;
 import static org.testng.Assert.*;
+import org.k11techlab.framework.ai.ollama.OllamaClient;
+import org.k11techlab.framework.ai.llmstudio.LLMStudioClient;
+import org.k11techlab.framework.ai.simple.SimpleAIClient;
 
 /**
  * Full AI Testing Demo with Multi-Provider Integration!
@@ -17,6 +20,8 @@ public class FullAIDemo extends BaseSeleniumTest {
     
     private AIProviderManager aiManager;
     private LLMInterface aiProvider;
+    private OllamaClient ollamaClient;
+    private SimpleAIClient fallbackClient;
     
     @BeforeMethod
     public void setup() {

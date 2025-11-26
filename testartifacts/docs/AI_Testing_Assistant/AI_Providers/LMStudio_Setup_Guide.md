@@ -1,7 +1,7 @@
-# LM Studio Setup Guide for K11 TechLab Test Automation Framework
+# LM Studio Setup Guide for K11 Tech Lab Test Automation Framework
 
 ## Overview
-This guide helps you integrate LM Studio with the K11 TechLab Selenium Java Test Automation Framework for AI-powered testing capabilities.
+This guide helps you integrate LM Studio with the K11 Tech Lab Selenium Java Test Automation Framework for AI-powered testing capabilities.
 
 ## Prerequisites
 

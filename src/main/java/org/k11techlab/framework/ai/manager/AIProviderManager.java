@@ -4,6 +4,7 @@ import org.k11techlab.framework.ai.llm.LLMInterface;
 import org.k11techlab.framework.ai.ollama.OllamaClient;
 import org.k11techlab.framework.ai.llmstudio.LLMStudioClient;
 import org.k11techlab.framework.ai.simple.SimpleAIClient;
+import org.k11techlab.framework.ai.rag.RAGEnhancedAIClient;
 import org.k11techlab.framework.selenium.webuitestengine.logger.Log;
 
 /**
@@ -23,7 +24,8 @@ public class AIProviderManager {
     public enum Provider {
         OLLAMA("Ollama"),
         LLMSTUDIO("LM Studio"),  
-        SIMPLE("Simple AI");
+        SIMPLE("Simple AI"),
+        RAG_ENHANCED("RAG-Enhanced AI");
         
         private final String displayName;
         
@@ -39,6 +41,7 @@ public class AIProviderManager {
     private LLMInterface currentProvider;
     private Provider currentProviderType;
     private final boolean enableFallback;
+    private final boolean enableRAG;
     
     /**
      * Constructor with fallback enabled by default
@@ -52,11 +55,21 @@ public class AIProviderManager {
      * @param enableFallback Whether to enable automatic fallback to other providers
      */
     public AIProviderManager(boolean enableFallback) {
+        this(enableFallback, false);
+    }
+    
+    /**
+     * Constructor with configurable fallback and RAG enhancement
+     * @param enableFallback Whether to enable automatic fallback to other providers
+     * @param enableRAG Whether to enable RAG enhancement for better context-aware responses
+     */
+    public AIProviderManager(boolean enableFallback, boolean enableRAG) {
         this.enableFallback = enableFallback;
+        this.enableRAG = enableRAG;
         this.currentProvider = null;
         this.currentProviderType = null;
         
-        Log.info("🤖 AI Provider Manager initialized (fallback: " + enableFallback + ")");
+        Log.info("🤖 AI Provider Manager initialized (fallback: " + enableFallback + ", RAG: " + enableRAG + ")");
     }
     
     /**
@@ -76,14 +89,15 @@ public class AIProviderManager {
             Log.info("Testing Ollama availability...");
             OllamaClient ollama = new OllamaClient();
             if (ollama.isAvailable()) {
-                currentProvider = ollama;
-                currentProviderType = Provider.OLLAMA;
-                Log.info("✅ Using Ollama as primary AI provider");
-                System.out.println("✅ Ollama AI connected successfully");
+                currentProvider = wrapWithRAG(ollama);
+                currentProviderType = enableRAG ? Provider.RAG_ENHANCED : Provider.OLLAMA;
+                Log.info("✅ Using Ollama as primary AI provider" + (enableRAG ? " with RAG enhancement" : ""));
+                System.out.println("✅ Ollama AI connected successfully" + (enableRAG ? " (RAG-enhanced)" : ""));
                 return currentProvider;
             } else {
                 Log.info("❌ Ollama not available");
                 System.out.println("❌ Ollama not available");
+                ollama.close(); // Fix resource leak
             }
         } catch (Exception e) {
             Log.info("Ollama initialization failed: " + e.getMessage());
@@ -95,14 +109,15 @@ public class AIProviderManager {
             Log.info("Testing LM Studio availability...");
             LLMStudioClient llmStudio = new LLMStudioClient();
             if (llmStudio.isAvailable()) {
-                currentProvider = llmStudio;
-                currentProviderType = Provider.LLMSTUDIO;
-                Log.info("✅ Using LM Studio as secondary AI provider");
-                System.out.println("✅ LM Studio AI connected successfully");
+                currentProvider = wrapWithRAG(llmStudio);
+                currentProviderType = enableRAG ? Provider.RAG_ENHANCED : Provider.LLMSTUDIO;
+                Log.info("✅ Using LM Studio as secondary AI provider" + (enableRAG ? " with RAG enhancement" : ""));
+                System.out.println("✅ LM Studio AI connected successfully" + (enableRAG ? " (RAG-enhanced)" : ""));
                 return currentProvider;
             } else {
                 Log.info("❌ LM Studio not available");
                 System.out.println("❌ LM Studio not available");
+                llmStudio.close(); // Fix resource leak
             }
         } catch (Exception e) {
             Log.info("LM Studio initialization failed: " + e.getMessage());
@@ -112,14 +127,38 @@ public class AIProviderManager {
         // Use Simple AI as fallback if enabled
         if (enableFallback) {
             Log.info("Using Simple AI Client as fallback");
-            System.out.println("🔄 Falling back to Simple AI Client");
-            currentProvider = new SimpleAIClient();
-            currentProviderType = Provider.SIMPLE;
+            System.out.println("🔄 Falling back to Simple AI Client" + (enableRAG ? " (RAG-enhanced)" : ""));
+            SimpleAIClient simpleAI = new SimpleAIClient();
+            currentProvider = wrapWithRAG(simpleAI);
+            currentProviderType = enableRAG ? Provider.RAG_ENHANCED : Provider.SIMPLE;
             return currentProvider;
         }
         
         Log.error("No AI providers available");
         System.out.println("❌ No AI providers available");
+        return null;
+    }
+    
+    /**
+     * Wrap an AI provider with RAG enhancement if enabled
+     */
+    private LLMInterface wrapWithRAG(LLMInterface baseProvider) {
+        if (enableRAG && baseProvider != null) {
+            Log.info("🧠 Wrapping provider with RAG enhancement");
+            return new RAGEnhancedAIClient(baseProvider);
+        }
+        return baseProvider;
+    }
+    
+    /**
+     * Get RAG-enhanced provider (always wraps with RAG regardless of global setting)
+     */
+    public LLMInterface getRAGEnhancedProvider() {
+        LLMInterface baseProvider = getBestProvider();
+        if (baseProvider != null) {
+            Log.info("🧠 Creating RAG-enhanced provider");
+            return new RAGEnhancedAIClient(baseProvider);
+        }
         return null;
     }
     

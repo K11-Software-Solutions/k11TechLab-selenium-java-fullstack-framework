@@ -8,7 +8,14 @@ New to AI-powered testing? Start here:
 2. **[🎪 Live Demo Guide](testartifacts/docs/AI_Testing_Assistant/Self_Healing/SELF_HEALING_DEMO_GUIDE.md)** - See self-healing in action
 3. **[📖 API Reference](AI_API_REFERENCE.md)** - Detailed API documentation
 
+
 ## 📋 Documentation Suite
+
+### 🧠 RAG (Retrieval-Augmented Generation)
+- **[RAG Documentation Index](RAG_DOCUMENTATION_INDEX.md)** - All RAG-related guides and architecture
+- **[RAG Architecture Guide](testartifacts/docs/AI_Testing_Assistant/RAG_Architecture/RAG_ARCHITECTURE_GUIDE.md)**
+- **[RAG Benefits Analysis](testartifacts/docs/AI_Testing_Assistant/RAG_Architecture/RAG_BENEFITS_ANALYSIS.md)**
+- **[RAG Architecture Overview](testartifacts/docs/AI_Testing_Assistant/RAG_Architecture/README.md)**
 
 ### 🏗️ Architecture & Design
 - **[🏠 Framework Architecture](AI_ARCHITECTURE.md)** - System design, components, and data flow
@@ -30,7 +37,6 @@ New to AI-powered testing? Start here:
 
 ### 🚀 CI/CD & Professional Showcase
 - **[🔄 GitHub Actions Integration](testartifacts/docs/GITHUB_ACTIONS_LMSTUDIO_GUIDE.md)** - Run AI tests in CI/CD pipelines
-- **[💼 LinkedIn Professional Article](testartifacts/docs/LINKEDIN_AI_SELFHEALING_ARTICLE.md)** - Share your AI testing expertise
 - **[🏗️ LM Studio Setup Guide](testartifacts/docs/AI_Testing_Assistant/AI_Providers/LMStudio_Setup_Guide.md)** - Complete LM Studio integration
 
 ## 🎪 Interactive Demos

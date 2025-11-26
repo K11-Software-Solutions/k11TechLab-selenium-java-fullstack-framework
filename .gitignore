@@ -1,3 +1,5 @@
+### Environment Variables ###
+.env
 target/
 allure-results
 lib
