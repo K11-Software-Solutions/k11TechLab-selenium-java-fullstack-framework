@@ -1,8 +1,33 @@
-# 🧱 K11 TechLab – Selenium Java Automation Framework
+# 🧱 K11 Tech Lab – Selenium Java Automation Framework
 
 🧰 Getting Started with the Java-Based End-to-End Test Automation Framework
 
 This Java-based test automation framework is designed to support **end-to-end test coverage** across web, API, and database layers, with seamless CI/CD integration and enterprise-grade extensibility.
+
+
+# 🤖 AI Enhancements (2025)
+
+This framework now includes advanced AI-powered features for smarter, context-aware automation and documentation search:
+
+- **Self-Healing Test Automation:**
+   - AI-powered element locator healing for resilient UI tests
+   - Automatically recovers from locator changes using semantic context and RAG
+   - Reduces test flakiness and maintenance effort
+- **Retrieval-Augmented Generation (RAG):**
+   - Semantic search and answer synthesis over your test docs and codebase
+   - Supports OpenAI, HuggingFace, and local Ollama embeddings
+   - Multi-provider, local/cloud, and offline AI support
+- **Persistent Embedding Cache:**
+   - Embeddings are computed once per document chunk and reused for all future runs
+   - Massive speedup and cost savings for repeated queries
+- **AI Demo & Documentation:**
+   - [Self-Healing Demo/Test Class](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/src/main/java/org/k11techlab/framework/ai/selenium/selfhealing/SelfHealingDemo.java)
+   - [RAGComponentsDemo.java (RAG Test Class)](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/src/main/java/org/k11techlab/framework/ai/rag/demo/RAGComponentsDemo.java)
+   - [Sample Output (Cache Hits!)](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/RAGComponentsDemo_output.txt)
+   - [RAG Demo Article & How-To](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/RAG_Demo.md)
+
+These enhancements make the framework ready for next-generation, AI-assisted, and self-healing test automation and knowledge retrieval.
+
 
 ---
 
@@ -16,6 +41,21 @@ This Java-based test automation framework is designed to support **end-to-end te
 - **Structured Logging & Reporting** with Log4j/SLF4J, ExtentReports, email and screenshot support  
 - **CI/CD Ready**: Jenkins, GitHub Actions, GitLab, and cloud execution (e.g., Sauce Labs)  
 
+
+# 🚀 AI-Powered Features
+
+- **Self-Healing Test Automation:**
+   - AI-powered element locator healing for resilient UI tests
+   - Automatically recovers from locator changes using semantic context and RAG
+   - Reduces test flakiness and maintenance effort
+- **Retrieval-Augmented Generation (RAG):**
+   - Semantic search and answer synthesis over your test docs and codebase
+   - Supports OpenAI, HuggingFace, and local Ollama embeddings
+   - Multi-provider, local/cloud, and offline AI support
+- **Persistent Embedding Cache:**
+   - Embeddings are computed once per document chunk and reused for all future runs
+   - Massive speedup and cost savings for repeated queries
+
 Built entirely with open-source libraries, this framework is **fully extensible**—ready to scale for validations involving files, emails, microservices, or third-party system integrations.
 
 ---
@@ -24,9 +64,35 @@ Built entirely with open-source libraries, this framework is **fully extensible*
 
 ### 📊 High-Level Diagram
 
++-------------------------------------------------------------+
+|                 Selenium Java Automation Framework          |
+|-------------------------------------------------------------|
+|  Test Suite / TestNG / POM / Data Providers                 |
+|-------------------------------------------------------------|
+|  Web, API, DB Utilities | Logging | Reporting | Config      |
+|-------------------------------------------------------------|
+|  Page Objects | Locators | Waits | Drivers                  |
+|-------------------------------------------------------------|
+|  [NEW] AI Integration Layer                                 |
+|   +-------------------+   +-------------------+             |
+|   | RAG Engine        |   | Self-Healing      |             |
+|   |  - Embedding      |   |  - Locator Healer |             |
+|   |    Providers      |   |  - AI Element     |             |
+|   |    (OpenAI, HF,   |   |    Recovery       |             |
+|   |     Ollama)       |   +-------------------+             |
+|   |  - Embedding      |                                   |
+|   |    Cache          |                                   |
+|   +-------------------+                                   |
+|-------------------------------------------------------------|
+|  Test Artifacts / Docs / Knowledge Base (for RAG)           |
++-------------------------------------------------------------+
+
+
 ![Selenium Automation Framework Architecture](testartifacts/assets/Selenium_Java_POM_E2E_Automation_Test_Infrastructure.jpg)
 
 > *Selenium Automation Framework Architecture — © 2025 Kavita Jadhav. All rights reserved.*
+
+---
 
 
 The framework is composed of well-structured layers to ensure **modularity**, **maintainability**, and **scalability** across complex enterprise test environments.
