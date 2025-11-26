@@ -18,6 +18,7 @@ This Java-based test automation framework is designed to support **end-to-end te
 - **CI/CD Ready**: Jenkins, GitHub Actions, GitLab, and cloud execution (e.g., Sauce Labs)  
 
 
+
 # 🚀 AI-Powered Features
 
 - **Self-Healing Test Automation:**
@@ -31,6 +32,10 @@ This Java-based test automation framework is designed to support **end-to-end te
 - **Persistent Embedding Cache:**
    - Embeddings are computed once per document chunk and reused for all future runs
    - Massive speedup and cost savings for repeated queries
+- **Chatbot/NLP & Conversational AI:**
+   - Conversational UI for natural language queries
+   - Integrates with RAG and knowledge base for context-aware answers
+   - Supports both local and cloud LLMs
 
 Built entirely with open-source libraries, this framework is **fully extensible**—ready to scale for validations involving files, emails, microservices, or third-party system integrations.
 
@@ -55,10 +60,12 @@ flowchart TD
    B --> C[AI Integration Layer]
    C --> D[RAG Engine]
    C --> E[Self-Healing Engine]
+   C --> J[Chatbot/NLP & Conversational AI]
    D --> F[Embedding Providers]
    D --> G[Embedding Cache]
    D --> H[Docs/Knowledge Base]
    E --> I[Locator Healing]
+   J --> K[Conversational UI]
 ```
 
 > *AI Features Integration: Shows how RAG, embedding cache, and self-healing plug into the core automation framework. Render this diagram with Mermaid for a visual overview.*
