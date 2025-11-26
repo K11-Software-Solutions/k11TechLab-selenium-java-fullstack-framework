@@ -5,30 +5,6 @@ Getting Started with the Java-Based End-to-End Test Automation Framework:
 This Java-based test automation framework is designed to support **end-to-end test coverage** across web, API, and database layers, with seamless CI/CD integration and enterprise-grade extensibility.
 
 
-# 🤖 AI Enhancements (2025)
-
-This framework now includes advanced AI-powered features for smarter, context-aware automation and documentation search:
-
-- **Self-Healing Test Automation:**
-   - AI-powered element locator healing for resilient UI tests
-   - Automatically recovers from locator changes using semantic context and RAG
-   - Reduces test flakiness and maintenance effort
-- **Retrieval-Augmented Generation (RAG):**
-   - Semantic search and answer synthesis over your test docs and codebase
-   - Supports OpenAI, HuggingFace, and local Ollama embeddings
-   - Multi-provider, local/cloud, and offline AI support
-- **Persistent Embedding Cache:**
-   - Embeddings are computed once per document chunk and reused for all future runs
-   - Massive speedup and cost savings for repeated queries
-- **AI Demo & Documentation:**
-   - [Self-Healing Demo/Test Class](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/src/main/java/org/k11techlab/framework/ai/selenium/selfhealing/SelfHealingDemo.java)
-   - [RAGComponentsDemo.java (RAG Test Class)](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/src/main/java/org/k11techlab/framework/ai/rag/demo/RAGComponentsDemo.java)
-   - [Sample Output (Cache Hits!)](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/RAGComponentsDemo_output.txt)
-   - [RAG Demo Article & How-To](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/RAG_Demo.md)
-
-These enhancements make the framework ready for next-generation, AI-assisted, and self-healing test automation and knowledge retrieval.
-
-
 ---
 
 ## ✅ Core Features
@@ -86,6 +62,32 @@ flowchart TD
 ```
 
 > *AI Features Integration: Shows how RAG, embedding cache, and self-healing plug into the core automation framework. Render this diagram with Mermaid for a visual overview.*
+
+
+
+# 🤖 AI Enhancements (2025)
+
+This framework now includes advanced AI-powered features for smarter, context-aware automation and documentation search:
+
+- **Self-Healing Test Automation:**
+   - AI-powered element locator healing for resilient UI tests
+   - Automatically recovers from locator changes using semantic context and RAG
+   - Reduces test flakiness and maintenance effort
+- **Retrieval-Augmented Generation (RAG):**
+   - Semantic search and answer synthesis over your test docs and codebase
+   - Supports OpenAI, HuggingFace, and local Ollama embeddings
+   - Multi-provider, local/cloud, and offline AI support
+- **Persistent Embedding Cache:**
+   - Embeddings are computed once per document chunk and reused for all future runs
+   - Massive speedup and cost savings for repeated queries
+- **AI Demo & Documentation:**
+   - [Self-Healing Demo/Test Class](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/src/main/java/org/k11techlab/framework/ai/selenium/selfhealing/SelfHealingDemo.java)
+   - [RAGComponentsDemo.java (RAG Test Class)](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/src/main/java/org/k11techlab/framework/ai/rag/demo/RAGComponentsDemo.java)
+   - [Sample Output (Cache Hits!)](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/RAGComponentsDemo_output.txt)
+   - [RAG Demo Article & How-To](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/RAG_Demo.md)
+
+These enhancements make the framework ready for next-generation, AI-assisted, and self-healing test automation and knowledge retrieval.
+
 
 
 The framework is composed of well-structured layers to ensure **modularity**, **maintainability**, and **scalability** across complex enterprise test environments.
