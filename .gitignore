@@ -1,5 +1,8 @@
 ### Environment Variables ###
 .env
+.log
+.txt
+.json
 target/
 allure-results
 lib

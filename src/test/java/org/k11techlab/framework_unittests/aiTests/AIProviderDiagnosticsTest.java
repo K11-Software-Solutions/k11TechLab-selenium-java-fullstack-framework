@@ -113,7 +113,7 @@ public class AIProviderDiagnosticsTest extends BaseSeleniumTest {
         
         try {
             System.out.println("🔧 Initializing AI Provider Manager...");
-            aiManager = new AIProviderManager(true); // Enable fallback for CI
+            aiManager = new AIProviderManager(); // Enable fallback for CI
             
             // Test best provider selection
             System.out.println("🎯 Testing best provider selection...");
@@ -167,7 +167,7 @@ public class AIProviderDiagnosticsTest extends BaseSeleniumTest {
             System.out.println("🔧 Testing fallback behavior with all providers...");
             
             // Create manager with fallback enabled
-            AIProviderManager fallbackManager = new AIProviderManager(true);
+            AIProviderManager fallbackManager = new AIProviderManager();
             
             // Get any available provider
             LLMInterface provider = fallbackManager.getBestProvider();

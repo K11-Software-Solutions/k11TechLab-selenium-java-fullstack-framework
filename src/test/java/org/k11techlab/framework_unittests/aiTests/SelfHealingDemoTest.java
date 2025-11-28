@@ -52,7 +52,7 @@ public class SelfHealingDemoTest extends BaseSeleniumTest {
         
         try {
             // Initialize AI provider manager with fallback enabled for CI
-            aiManager = new AIProviderManager(isCI);
+            aiManager = new AIProviderManager();
             
             // Handle specific provider requests from system properties
             if ("ollama".equals(testMode) || "ollama".equals(aiProvider)) {

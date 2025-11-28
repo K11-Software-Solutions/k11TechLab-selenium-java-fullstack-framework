@@ -36,7 +36,7 @@ public class AIHealingDemoTest extends BaseSeleniumTest {
         System.out.println("🤖 Setting up AI-Powered Element Healing...");
         
         // Initialize AI Provider
-        aiManager = new AIProviderManager(true);
+        aiManager = new AIProviderManager();
         aiProvider = aiManager.getBestProvider();
         
         if (aiProvider != null) {

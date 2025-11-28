@@ -23,7 +23,7 @@ public class LMStudioAITest extends BaseSeleniumTest {
     @BeforeClass
     public void setupAI() {
         Log.info("🚀 Setting up LM Studio AI Test");
-        aiManager = new AIProviderManager(true); // Enable fallback
+        aiManager = new AIProviderManager(); // Enable fallback
     }
     
     @Test(priority = 1, description = "Test LM Studio specific provider")

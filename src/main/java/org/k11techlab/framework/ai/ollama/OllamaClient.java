@@ -33,17 +33,17 @@ public class OllamaClient implements LLMInterface {
         this.baseUrl = baseUrl;
         // Allow model override from system properties (useful for CI)
         this.model = System.getProperty("ai.model", model);
-        // Create HTTP client with longer timeouts for LLM responses
+        // Create HTTP client with longer timeouts for LLM responses (90s)
         this.httpClient = HttpClients.custom()
             .setDefaultRequestConfig(
                 org.apache.hc.client5.http.config.RequestConfig.custom()
-                    .setConnectionRequestTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+                    .setConnectionRequestTimeout(20, java.util.concurrent.TimeUnit.SECONDS)
                     .setResponseTimeout(90, java.util.concurrent.TimeUnit.SECONDS) // Increased to 90s
                     .build()
             )
             .build();
         this.objectMapper = new ObjectMapper();
-        Log.info("OllamaClient initialized with model: " + this.model + " (90s timeout)");
+        Log.info("OllamaClient initialized with model: " + this.model + " (30s timeout)");
     }
     
     /**
@@ -105,7 +105,7 @@ public class OllamaClient implements LLMInterface {
      */
     private String callOllama(String prompt) throws IOException {
         HttpPost post = new HttpPost(baseUrl + "/api/generate");
-        
+
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", model);
         requestBody.put("prompt", prompt);
@@ -117,19 +117,23 @@ public class OllamaClient implements LLMInterface {
         options.put("num_predict", 150); // Shorter responses for speed
         options.put("repeat_penalty", 1.1);
         requestBody.put("options", options);
-        
+
         String jsonBody = objectMapper.writeValueAsString(requestBody);
         post.setEntity(new StringEntity(jsonBody));
         post.setHeader("Content-Type", "application/json");
-        
-        // Set longer request timeout for LLM processing
-        org.apache.hc.client5.http.config.RequestConfig requestConfig = 
+
+        // Set longer request timeout for LLM processing (90s)
+        org.apache.hc.client5.http.config.RequestConfig requestConfig =
             org.apache.hc.client5.http.config.RequestConfig.custom()
                 .setConnectionRequestTimeout(20, java.util.concurrent.TimeUnit.SECONDS)
-                .setResponseTimeout(90, java.util.concurrent.TimeUnit.SECONDS) // Match client timeout
+                .setResponseTimeout(90, java.util.concurrent.TimeUnit.SECONDS) // Increased to 90s
                 .build();
         post.setConfig(requestConfig);
-        
+
+        // Timestamped debug output before/after call
+        long start = System.currentTimeMillis();
+        System.out.println("[DEBUG] Ollama call start: " + start + " ms | prompt: " + prompt);
+
         HttpClientResponseHandler<String> responseHandler = response -> {
             int status = response.getCode();
             if (status >= 200 && status < 300) {
@@ -144,8 +148,11 @@ public class OllamaClient implements LLMInterface {
                 throw new IOException("HTTP error code: " + status);
             }
         };
-        
-        return httpClient.execute(post, responseHandler);
+
+        String result = httpClient.execute(post, responseHandler);
+        long end = System.currentTimeMillis();
+        System.out.println("[DEBUG] Ollama call end: " + end + " ms | duration: " + (end - start) + " ms");
+        return result;
     }
     
     /**

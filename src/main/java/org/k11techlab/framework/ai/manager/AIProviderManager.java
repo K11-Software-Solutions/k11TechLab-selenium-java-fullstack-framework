@@ -2,10 +2,14 @@ package org.k11techlab.framework.ai.manager;
 
 import org.k11techlab.framework.ai.llm.LLMInterface;
 import org.k11techlab.framework.ai.ollama.OllamaClient;
+import org.k11techlab.framework.ai.openai.OpenAIClient;
 import org.k11techlab.framework.ai.llmstudio.LLMStudioClient;
 import org.k11techlab.framework.ai.simple.SimpleAIClient;
 import org.k11techlab.framework.ai.rag.RAGEnhancedAIClient;
 import org.k11techlab.framework.selenium.webuitestengine.logger.Log;
+import java.util.List;
+import java.util.ArrayList;
+import org.k11techlab.framework.selenium.webuitestengine.configManager.ConfigurationManager;
 
 /**
  * AI Provider Manager for Test Automation Framework
@@ -13,131 +17,152 @@ import org.k11techlab.framework.selenium.webuitestengine.logger.Log;
  * 
  * Supported Providers:
  * - Ollama (primary)
- * - LM Studio (secondary) 
+ * - LM Studio (secondary)
  * - Simple AI Client (fallback)
+ * - OpenAI (if configured)
  * 
- * @author K11 TechLab
+ * @author K11 Tech Lab
  * @version 1.0
  */
 public class AIProviderManager {
-    
+        /**
+         * Get the best available AI provider
+         * Priority order is configurable via ai.provider.priority in config (e.g. OLLAMA,SIMPLE)
+         */
+        public LLMInterface getBestProvider() {
+            if (currentProvider != null && currentProvider.isAvailable()) {
+                return currentProvider;
+            }
+
+            Log.info("🔍 Searching for available AI providers...");
+            System.out.println("🔍 Scanning AI providers for best available option...");
+
+            // Read provider priority from config
+            String priorityConfig = ConfigurationManager.getString("ai.provider.priority", "OLLAMA,SIMPLE");
+            String[] priorities = priorityConfig.split(",");
+            List<String> providerOrder = new ArrayList<>();
+            for (String p : priorities) {
+                String trimmed = p.trim().toUpperCase();
+                if (!trimmed.isEmpty()) providerOrder.add(trimmed);
+            }
+            // Always ensure SIMPLE is last fallback
+            if (!providerOrder.contains("SIMPLE")) providerOrder.add("SIMPLE");
+
+            for (String provider : providerOrder) {
+                try {
+                    switch (provider) {
+                        case "OPENAI": {
+                            Log.info("Testing OpenAI availability...");
+                            OpenAIClient openai = new OpenAIClient();
+                            try {
+                                if (openai.isAvailable()) {
+                                    currentProvider = openai;
+                                    currentProviderType = Provider.OPENAI;
+                                    Log.info("✅ Using OpenAI as AI provider");
+                                    System.out.println("✅ OpenAI connected successfully");
+                                    return currentProvider;
+                                } else {
+                                    Log.info("❌ OpenAI not available");
+                                    System.out.println("❌ OpenAI not available");
+                                    openai.close();
+                                }
+                            } catch (Exception e) {
+                                openai.close();
+                                throw e;
+                            }
+                            break;
+                        }
+                        case "OLLAMA": {
+                            Log.info("Testing Ollama availability...");
+                            OllamaClient ollama = new OllamaClient();
+                            try {
+                                if (ollama.isAvailable()) {
+                                    currentProvider = ollama;
+                                    currentProviderType = Provider.OLLAMA;
+                                    Log.info("✅ Using Ollama as AI provider");
+                                    System.out.println("✅ Ollama AI connected successfully");
+                                    return currentProvider;
+                                } else {
+                                    Log.info("❌ Ollama not available");
+                                    System.out.println("❌ Ollama not available");
+                                    ollama.close();
+                                }
+                            } catch (Exception e) {
+                                ollama.close();
+                                throw e;
+                            }
+                            break;
+                        }
+                        case "LLMSTUDIO": {
+                            Log.info("Testing LM Studio availability...");
+                            LLMStudioClient llmStudio = new LLMStudioClient();
+                            try {
+                                if (llmStudio.isAvailable()) {
+                                    currentProvider = llmStudio;
+                                    currentProviderType = Provider.LLMSTUDIO;
+                                    Log.info("✅ Using LM Studio as AI provider");
+                                    System.out.println("✅ LM Studio AI connected successfully");
+                                    return currentProvider;
+                                } else {
+                                    Log.info("❌ LM Studio not available");
+                                    System.out.println("❌ LM Studio not available");
+                                    llmStudio.close();
+                                }
+                            } catch (Exception e) {
+                                llmStudio.close();
+                                throw e;
+                            }
+                            break;
+                        }
+                        case "SIMPLE": {
+                            Log.info("Using Simple AI Client as fallback");
+                            SimpleAIClient simpleAI = new SimpleAIClient();
+                            try {
+                                currentProvider = simpleAI;
+                                currentProviderType = Provider.SIMPLE;
+                                Log.info("✅ Using Simple AI Client as fallback");
+                                System.out.println("🔄 Falling back to Simple AI Client");
+                                return currentProvider;
+                            } catch (Exception e) {
+                                simpleAI.close();
+                                throw e;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.info(provider + " initialization failed: " + e.getMessage());
+                    System.out.println("⚠️ " + provider + " initialization failed: " + e.getMessage());
+                }
+            }
+
+            Log.error("No AI providers available");
+            System.out.println("❌ No AI providers available");
+            return null;
+        }
     public enum Provider {
         OLLAMA("Ollama"),
-        LLMSTUDIO("LM Studio"),  
+        LLMSTUDIO("LM Studio"),
         SIMPLE("Simple AI"),
+        OPENAI("OpenAI"),
         RAG_ENHANCED("RAG-Enhanced AI");
-        
+
         private final String displayName;
-        
+
         Provider(String displayName) {
             this.displayName = displayName;
         }
-        
+
         public String getDisplayName() {
             return displayName;
         }
     }
-    
+
     private LLMInterface currentProvider;
     private Provider currentProviderType;
-    private final boolean enableFallback;
-    private final boolean enableRAG;
-    
-    /**
-     * Constructor with fallback enabled by default
-     */
-    public AIProviderManager() {
-        this(true);
-    }
-    
-    /**
-     * Constructor with configurable fallback
-     * @param enableFallback Whether to enable automatic fallback to other providers
-     */
-    public AIProviderManager(boolean enableFallback) {
-        this(enableFallback, false);
-    }
-    
-    /**
-     * Constructor with configurable fallback and RAG enhancement
-     * @param enableFallback Whether to enable automatic fallback to other providers
-     * @param enableRAG Whether to enable RAG enhancement for better context-aware responses
-     */
-    public AIProviderManager(boolean enableFallback, boolean enableRAG) {
-        this.enableFallback = enableFallback;
-        this.enableRAG = enableRAG;
-        this.currentProvider = null;
-        this.currentProviderType = null;
-        
-        Log.info("🤖 AI Provider Manager initialized (fallback: " + enableFallback + ", RAG: " + enableRAG + ")");
-    }
-    
-    /**
-     * Get the best available AI provider
-     * Priority order: Ollama -> LM Studio -> Simple AI
-     */
-    public LLMInterface getBestProvider() {
-        if (currentProvider != null && currentProvider.isAvailable()) {
-            return currentProvider;
-        }
-        
-        Log.info("🔍 Searching for available AI providers...");
-        System.out.println("🔍 Scanning AI providers for best available option...");
-        
-        // Try Ollama first (primary choice)
-        try {
-            Log.info("Testing Ollama availability...");
-            OllamaClient ollama = new OllamaClient();
-            if (ollama.isAvailable()) {
-                currentProvider = wrapWithRAG(ollama);
-                currentProviderType = enableRAG ? Provider.RAG_ENHANCED : Provider.OLLAMA;
-                Log.info("✅ Using Ollama as primary AI provider" + (enableRAG ? " with RAG enhancement" : ""));
-                System.out.println("✅ Ollama AI connected successfully" + (enableRAG ? " (RAG-enhanced)" : ""));
-                return currentProvider;
-            } else {
-                Log.info("❌ Ollama not available");
-                System.out.println("❌ Ollama not available");
-                ollama.close(); // Fix resource leak
-            }
-        } catch (Exception e) {
-            Log.info("Ollama initialization failed: " + e.getMessage());
-            System.out.println("⚠️ Ollama initialization failed: " + e.getMessage());
-        }
-        
-        // Try LM Studio second
-        try {
-            Log.info("Testing LM Studio availability...");
-            LLMStudioClient llmStudio = new LLMStudioClient();
-            if (llmStudio.isAvailable()) {
-                currentProvider = wrapWithRAG(llmStudio);
-                currentProviderType = enableRAG ? Provider.RAG_ENHANCED : Provider.LLMSTUDIO;
-                Log.info("✅ Using LM Studio as secondary AI provider" + (enableRAG ? " with RAG enhancement" : ""));
-                System.out.println("✅ LM Studio AI connected successfully" + (enableRAG ? " (RAG-enhanced)" : ""));
-                return currentProvider;
-            } else {
-                Log.info("❌ LM Studio not available");
-                System.out.println("❌ LM Studio not available");
-                llmStudio.close(); // Fix resource leak
-            }
-        } catch (Exception e) {
-            Log.info("LM Studio initialization failed: " + e.getMessage());
-            System.out.println("⚠️ LM Studio initialization failed: " + e.getMessage());
-        }
-        
-        // Use Simple AI as fallback if enabled
-        if (enableFallback) {
-            Log.info("Using Simple AI Client as fallback");
-            System.out.println("🔄 Falling back to Simple AI Client" + (enableRAG ? " (RAG-enhanced)" : ""));
-            SimpleAIClient simpleAI = new SimpleAIClient();
-            currentProvider = wrapWithRAG(simpleAI);
-            currentProviderType = enableRAG ? Provider.RAG_ENHANCED : Provider.SIMPLE;
-            return currentProvider;
-        }
-        
-        Log.error("No AI providers available");
-        System.out.println("❌ No AI providers available");
-        return null;
-    }
+    private final boolean enableFallback = true;
+    private final boolean enableRAG = false;
+// ...existing code...
+// ...existing code...
     
     /**
      * Wrap an AI provider with RAG enhancement if enabled

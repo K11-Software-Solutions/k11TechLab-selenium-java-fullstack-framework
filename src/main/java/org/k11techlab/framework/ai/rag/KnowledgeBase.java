@@ -12,10 +12,19 @@ import java.util.stream.Collectors;
  * Knowledge Base for RAG (Retrieval-Augmented Generation) System
  * Stores and retrieves domain-specific knowledge for AI-enhanced responses
  */
+
+import org.k11techlab.framework.ai.rag.components.*;
+
 public class KnowledgeBase {
 
     private final List<DocumentChunk> knowledgeChunks;
     private final Map<DocumentCategory, Integer> categoryCounts;
+
+    // RAG components
+    private final VectorStore vectorStore;
+    private final DocumentRetriever documentRetriever;
+    private final EmbeddingCache embeddingCache;
+    private final DocumentRetriever.EmbeddingFunction embeddingFunction;
 
     public enum DocumentCategory {
         LOCATOR_PATTERNS,
@@ -62,15 +71,66 @@ public class KnowledgeBase {
     /**
      * Initialize knowledge base with built-in knowledge
      */
+
+    /**
+     * Initialize knowledge base with built-in knowledge and RAG components
+     * Uses OllamaEmbedder by default (can be changed to OpenAI/HuggingFace as needed)
+     */
     public KnowledgeBase() {
         this.knowledgeChunks = new ArrayList<>();
         this.categoryCounts = new HashMap<>();
-        
+
+        // --- RAG components setup ---
+        // You can change these URLs/keys as needed for your environment
+        String ollamaUrl = System.getProperty("ollama.url", "http://localhost:11434");
+        String ollamaModel = System.getProperty("ollama.model", "llama3");
+        this.embeddingCache = new EmbeddingCache("rag_embedding_cache.json");
+
+        DocumentRetriever.EmbeddingFunction embedder = new OllamaEmbedder(ollamaUrl, ollamaModel);
+        this.embeddingFunction = text -> {
+            double[] cached = embeddingCache.get(text);
+            if (cached != null) return cached;
+            double[] vec = embedder.embed(text);
+            if (vec != null && vec.length > 0) embeddingCache.put(text, vec);
+            return vec;
+        };
+        this.vectorStore = new VectorStore();
+        this.documentRetriever = new DocumentRetriever(vectorStore, embeddingFunction);
+
         Log.info("🧠 Initializing RAG Knowledge Base...");
         indexBuiltInKnowledge();
         indexExternalDocs();
-        Log.info("📚 Knowledge Base initialized with " + knowledgeChunks.size() + " documents");
+        // Index all chunks into vector store for RAG
+        indexChunksToVectorStore();
+        embeddingCache.save();
+        Log.info("📚 Knowledge Base initialized with " + knowledgeChunks.size() + " documents (RAG ready)");
     }
+
+    /**
+     * Index all knowledge chunks into the VectorStore for RAG retrieval
+     */
+    private void indexChunksToVectorStore() {
+        for (DocumentChunk chunk : knowledgeChunks) {
+            double[] vec = embeddingFunction.embed(chunk.getContent());
+            if (vec != null && vec.length > 0) {
+                vectorStore.add(chunk.getId(), vec, chunk);
+            }
+        }
+    }
+        /**
+         * Retrieve relevant knowledge using RAG vector search (semantic)
+         * Returns DocumentChunks ranked by vector similarity
+         */
+        public List<DocumentChunk> retrieveRelevantKnowledgeRAG(String query, int maxResults) {
+            List<VectorStore.VectorEntry> entries = documentRetriever.retrieve(query, maxResults);
+            List<DocumentChunk> result = new ArrayList<>();
+            for (VectorStore.VectorEntry entry : entries) {
+                if (entry.payload instanceof DocumentChunk) {
+                    result.add((DocumentChunk) entry.payload);
+                }
+            }
+            return result;
+        }
     /**
      * Index external documentation files from testartifacts/docs
      */

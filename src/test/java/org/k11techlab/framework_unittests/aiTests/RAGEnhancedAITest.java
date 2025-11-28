@@ -30,10 +30,10 @@ public class RAGEnhancedAITest extends BaseSeleniumTest {
         
         try {
             // Initialize AI provider manager with RAG enabled
-            aiManager = new AIProviderManager(true, true); // fallback=true, RAG=true
+            aiManager = new AIProviderManager(); // fallback=true, RAG=true
             
             // Get base AI provider for comparison
-            baseAI = new AIProviderManager(true, false).getBestProvider();
+            baseAI = new AIProviderManager().getBestProvider();
             
             // Get RAG-enhanced provider
             ragAI = (RAGEnhancedAIClient) aiManager.getRAGEnhancedProvider();
