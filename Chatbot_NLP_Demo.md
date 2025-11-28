@@ -89,25 +89,6 @@ ai.provider.priority=OPENAI,OLLAMA,SIMPLE
 
 ---
 
-## 5. Architecture Diagram
-
-```mermaid
-graph TD
-    A[User/Engineer] -->|Natural Language Query| B(Chatbot/NLP Engine)
-    B -->|Intent Recognition| C{Intent}
-    C -->|Knowledge Query| D(RAG Engine)
-    C -->|Framework Action| E(Automation Framework)
-    D -->|Semantic Search| F[Knowledge Base]
-    D -->|Embedding Lookup| G[Embedding Cache]
-    D -->|LLM Completion| H[LLM Providers]
-    H -->|OpenAI/HuggingFace/Ollama| I[Cloud/Local LLMs]
-    F -->|Docs, Code, Best Practices| D
-    G -->|Cached Embeddings| D
-    D -->|Synthesized Answer| B
-    B -->|Conversational Response| A
-```
-
----
 
 ## 6. Why Use This Chatbot?
 - Get instant, accurate answers grounded in your own framework.
