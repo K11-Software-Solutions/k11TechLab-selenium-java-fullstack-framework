@@ -12,9 +12,15 @@
      java -cp target/classes org.k11techlab.framework.ai.chatbot.ChatbotGUI
      ```
    - Or, from your IDE, run the `main` method in `ChatbotGUI.java`.
-3. **Configure AI providers and RAG settings:**
+3. **Run RAGKnowledgeChatbot or StrictFrameworkRAGChatbot from CLI:**
+      ```sh
+     java -cp target/classes org.k11techlab.framework.ai.chatbot.RAGKnowledgeChatbot
+     java -cp target/classes org.k11techlab.framework.ai.chatbot.StrictFrameworkRAGChatbot
+     ```
+   - Or, create a small demo class with a `main` method that instantiates and uses these classes.
+4. **Configure AI providers and RAG settings:**
    - Edit `config/chatbot.ai.properties` to set provider order, max tokens, context length, etc.
-4. **(Optional) Use screenshots and code samples below to explore features.**
+5. **(Optional) Use screenshots and code samples below to explore features.**
 
 ---
 
