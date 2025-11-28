@@ -90,14 +90,14 @@ ai.provider.priority=OPENAI,OLLAMA,SIMPLE
 ---
 
 
-## 6. Why Use This Chatbot?
+## 5. Why Use This Chatbot?
 - Get instant, accurate answers grounded in your own framework.
 - Save time, reduce onboarding friction, and boost test coverage and quality.
 - Robust, extensible, and ready for enterprise use.
 
 ---
 
-## 🗺️ Chatbot RAG+NLP Flow (Mermaid)
+## 6.🗺️ Chatbot RAG+NLP Flow (Mermaid)
 
 ```mermaid
 flowchart TD
@@ -117,7 +117,7 @@ flowchart TD
     D -->|LLM Completion| G[LLM Provider Manager]
 
     %% Providers
-    G --> H["Cloud / Local LLMs<br/>(OpenAI, HuggingFace, Ollama)"]
+    G --> H["Cloud / Local LLMs<br/>(OpenAI,HuggingFace,Ollama)"]
 
     %% Return path
     E --> D
