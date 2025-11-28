@@ -1,0 +1,27 @@
+flowchart TD
+
+    %% User Layer
+    A[User / Engineer] -->|Natural Language Query| B(Chatbot / NLP Engine)
+
+    %% NLP & Intent
+    B -->|Intent Recognition| C{Intent}
+
+    %% Intent Branches
+    C -->|Knowledge Query| D[RAG Engine]
+    C -->|Framework Action| M[Automation Framework]
+
+    %% RAG Internal Flows
+    D -->|Semantic Search| E[Knowledge Base]
+    D -->|Embedding Lookup| F[Embedding Cache]
+    D -->|LLM Completion| G[LLM Provider Manager]
+
+    %% Providers
+    G --> H[Cloud / Local LLMs\n(OpenAI, HuggingFace, Ollama)]
+
+    %% Return path
+    E --> D
+    F --> D
+    H --> D
+
+    D -->|Synthesized Answer| B
+    B -->|Conversational Response| A
