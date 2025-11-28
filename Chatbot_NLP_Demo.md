@@ -1,5 +1,23 @@
 # RAG+NLP Chatbot Demo for Test Automation Framework
 
+## 🏃‍♂️ Execution Instructions
+
+1. **Build the project:**
+   ```sh
+   mvn clean package
+   ```
+2. **Run the Chatbot GUI:**
+   - From the command line:
+     ```sh
+     java -cp target/classes org.k11techlab.framework.ai.chatbot.ChatbotGUI
+     ```
+   - Or, from your IDE, run the `main` method in `ChatbotGUI.java`.
+3. **Configure AI providers and RAG settings:**
+   - Edit `config/chatbot.ai.properties` to set provider order, max tokens, context length, etc.
+4. **(Optional) Use screenshots and code samples below to explore features.**
+
+---
+
 ## 🚀 Overview
 This demo showcases the Retrieval-Augmented Generation (RAG) and NLP-powered chatbot built into the K11 Tech Lab Selenium Java Automation Framework. The chatbot delivers context-aware, framework-specific answers, generates test cases, and provides conversational assistance for automation engineers.
 
