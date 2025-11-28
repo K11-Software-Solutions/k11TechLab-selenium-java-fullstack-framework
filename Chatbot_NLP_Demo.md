@@ -136,7 +136,7 @@ flowchart TD
     D -->|LLM Completion| G[LLM Provider Manager]
 
     %% Providers
-    G --> H[Cloud / Local LLMs\n(OpenAI, HuggingFace, Ollama)]
+    G --> H["Cloud / Local LLMs<br/>(OpenAI, HuggingFace, Ollama)"]
 
     %% Return path
     E --> D
