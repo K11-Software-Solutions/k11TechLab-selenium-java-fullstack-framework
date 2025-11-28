@@ -16,7 +16,7 @@ This demo showcases the Retrieval-Augmented Generation (RAG) and NLP-powered cha
 
 ## 1. Launching the Chatbot GUI
 
-![Chatbot GUI Screenshot](testartifacts/assets/chatbot_gui_main.png)
+![Chatbot GUI Screenshot](testartifacts/assets/demo_screenshots/chatbot_nlp/chatbot_gui_main.png)
 
 Run the following command or launch from your IDE:
 ```java
@@ -31,7 +31,7 @@ public static void main(String[] args) {
 
 ## 2. Asking Framework-Specific Questions
 
-![Framework Q&A Screenshot](testartifacts/assets/chatbot_framework_qa.png)
+![Framework Q&A Screenshot](testartifacts/assets/demo_screenshots/chatbot_nlp/demo_chatbot_framework_qa.png)
 
 ```java
 String question = "How do I implement a self-healing Selenium locator?";
@@ -43,7 +43,7 @@ System.out.println(answer);
 
 ## 3. Generating Test Cases
 
-![Test Case Generation Screenshot](testartifacts/assets/chatbot_testcase_generation.png)
+![Test Case Generation Screenshot](testartifacts/assets/demo_screenshots/chatbot_nlp/chatbot_testcase_generation.png)
 
 ```java
 String testPrompt = "Generate test cases for an e-commerce checkout flow.";
