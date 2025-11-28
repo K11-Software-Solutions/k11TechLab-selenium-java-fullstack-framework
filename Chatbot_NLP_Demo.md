@@ -116,4 +116,45 @@ graph TD
 
 ---
 
-*For more details, see the full documentation in `testartifacts/docs/AI_Testing_Assistant/nlp/NLP_Chatbot_Implementation_Article.md`.*
+## 🗺️ Chatbot RAG+NLP Flow (Mermaid)
+
+```mermaid
+flowchart TD
+    %% User Layer
+    A[User / Engineer] -->|Natural Language Query| B(Chatbot / NLP Engine)
+
+    %% NLP & Intent
+    B -->|Intent Recognition| C{Intent}
+
+    %% Intent Branches
+    C -->|Knowledge Query| D[RAG Engine]
+    C -->|Framework Action| M[Automation Framework]
+
+    %% RAG Internal Flows
+    D -->|Semantic Search| E[Knowledge Base]
+    D -->|Embedding Lookup| F[Embedding Cache]
+    D -->|LLM Completion| G[LLM Provider Manager]
+
+    %% Providers
+    G --> H[Cloud / Local LLMs\n(OpenAI, HuggingFace, Ollama)]
+
+    %% Return path
+    E --> D
+    F --> D
+    H --> D
+
+    D -->|Synthesized Answer| B
+    B -->|Conversational Response| A
+```
+
+---
+
+## 7. References
+- [Full Implementation Article](testartifacts/docs/AI_Testing_Assistant/nlp/NLP_Chatbot_Implementation_Article.md)
+- [RAGKnowledgeChatbot.java](src/main/java/org/k11techlab/framework/ai/chatbot/RAGKnowledgeChatbot.java)
+- [StrictFrameworkRAGChatbot.java](src/main/java/org/k11techlab/framework/ai/chatbot/StrictFrameworkRAGChatbot.java)
+- [ChatbotGUI.java](src/main/java/org/k11techlab/framework/ai/chatbot/ChatbotGUI.java)
+- [RAGEnhancedAIClient.java](src/main/java/org/k11techlab/framework/ai/rag/RAGEnhancedAIClient.java)
+- [AIProviderManager.java](src/main/java/org/k11techlab/framework/ai/manager/AIProviderManager.java)
+- [Sample Properties](config/chatbot.ai.properties)
+- [Demo Screenshots](testartifacts/assets/demo_screenshots/chatbot_nlp/)
