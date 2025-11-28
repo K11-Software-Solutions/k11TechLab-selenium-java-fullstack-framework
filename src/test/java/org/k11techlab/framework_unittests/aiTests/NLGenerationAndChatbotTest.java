@@ -35,12 +35,40 @@ public class NLGenerationAndChatbotTest extends BaseSeleniumTest {
             .replaceAll("(?<![\\w.])driver\\.get\\(", "getDriver().get(")
             .replaceAll("(?<![\\w.])driver\\.findElement\\(", "getDriver().findElement(");
 
+
+        // Comment out AI-generated metadata blocks (knowledge sources, tips, summaries, etc.)
+        // This will wrap any block starting with 'ℹ️', '📚', '💡', '?', or 'In the above Java class:' and following lines until a blank line or end of string
+        String[] lines = patchedContent.split("\r?\n");
+        StringBuilder commentedContentBuilder = new StringBuilder();
+        boolean inMetaBlock = false;
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            String trimmed = line.trim();
+            if (!inMetaBlock && (trimmed.startsWith("ℹ️") || trimmed.startsWith("📚") || trimmed.startsWith("💡") || trimmed.startsWith("?") || trimmed.startsWith("In the above Java class:"))) {
+                inMetaBlock = true;
+                commentedContentBuilder.append("/*\n");
+            }
+            if (inMetaBlock) {
+                commentedContentBuilder.append(line).append("\n");
+                // End block on blank line or last line
+                boolean isLastLine = (i == lines.length - 1);
+                boolean isBlank = trimmed.isEmpty();
+                if (isBlank || isLastLine) {
+                    commentedContentBuilder.append("*/\n");
+                    inMetaBlock = false;
+                }
+            } else {
+                commentedContentBuilder.append(line).append("\n");
+            }
+        }
+        String commentedContent = commentedContentBuilder.toString();
+
         // Debug output: print the generated code
-        System.out.println("--- DEBUG: Generated code for " + fileName + " ---\n" + patchedContent + "\n--- END ---");
+        System.out.println("--- DEBUG: Generated code for " + fileName + " ---\n" + commentedContent + "\n--- END ---");
 
         // Always save the file, even if it's a placeholder or not a valid class
         try (java.io.FileWriter writer = new java.io.FileWriter(fullPath)) {
-            writer.write(patchedContent);
+            writer.write(commentedContent);
             System.out.println("📁 Saved output to: " + fullPath);
         } catch (Exception e) {
             System.out.println("❌ Failed to save file: " + fullPath + " - " + e.getMessage());

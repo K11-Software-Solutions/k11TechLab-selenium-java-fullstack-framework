@@ -375,20 +375,22 @@ public class NLTestGenerator {
      * Generate test name from description
      */
     private String generateTestName(String description) {
-        // Convert natural language to camelCase test name
-        String[] words = description.toLowerCase()
-            .replaceAll("[^a-zA-Z0-9\\s]", "")
-            .split("\\s+");
-        
-        StringBuilder testName = new StringBuilder("test");
-        for (String word : words) {
-            if (!word.isEmpty() && word.length() > 2) {
-                testName.append(Character.toUpperCase(word.charAt(0)))
-                       .append(word.substring(1));
-            }
+        // Always use a concise, valid class name for generated tests
+        // If the description contains 'login', use 'GeneratedLoginTest', etc.
+        String desc = description.toLowerCase();
+        if (desc.contains("login")) {
+            return "GeneratedLoginTest";
+        } else if (desc.contains("e-commerce") || desc.contains("shopping") || desc.contains("cart") || desc.contains("checkout")) {
+            return "GeneratedEcommerceTest";
+        } else if (desc.contains("search")) {
+            return "GeneratedSearchTest";
+        } else if (desc.contains("form")) {
+            return "GeneratedFormTest";
+        } else if (desc.contains("api")) {
+            return "GeneratedApiTest";
         }
-        
-        return testName.toString();
+        // Fallback: use 'GeneratedTest'
+        return "GeneratedTest";
     }
     
     /**

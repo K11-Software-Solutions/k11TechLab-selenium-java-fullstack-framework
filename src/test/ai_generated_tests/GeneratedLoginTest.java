@@ -2,59 +2,55 @@ package org.k11techlab.framework.generated.tests;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.testng.annotations.Test;
-import org.testng.annotations.BeforeMethod;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterMethod;
-import org.k11techlab.framework.BaseSeleniumTest;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
-public class testYouAreExpertJavaSeleniumTestDeveloperGenerateTestngTestClassForLogIntoWebsiteUsingUsernameTestuserAndPasswordTestpassThenVerifyTheDashboardDisplayedUseTheWebdriverPatternGetdriverPageObjectModelAndNotUsePlaceholderCodeOutputOnlyValidCompilableJavaClass extends BaseSeleniumTest {
+public class GeneratedLoginTest extends BaseSeleniumTest {
+
+    private WebDriver driver;
 
     @BeforeMethod
-    public void setUp() {
+    public void setup() {
+        driver = getDriver();
         getDriver().get("https://demo.testsite.com");
     }
 
     @Test
     public void testLoginAndVerifyDashboard() {
-        try {
-            WebElement usernameField = elementHealer.findElement("Username field");
-            WebElement passwordField = elementHealer.findElement("Password field");
-            WebElement loginButton = elementHealer.findElement("Login button");
+        WebElement usernameInput = elementHealer.findElement("username input field");
+        WebElement passwordInput = elementHealer.findElement("password input field");
+        WebElement loginButton = elementHealer.findElement("login button");
 
-            usernameField.sendKeys("testuser");
-            passwordField.sendKeys("testpass");
-            loginButton.click();
+        usernameInput.sendKeys("testuser");
+        passwordInput.sendKeys("testpass");
+        loginButton.click();
 
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
-            wait.until(ExpectedConditions.urlContains("dashboard"));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.urlContains("dashboard"));
 
-            // Add validations for dashboard elements if needed
+        // Add meaningful assertions and log messages for verification
+        // Example: Assert.assertTrue(driver.getCurrentUrl().contains("dashboard"), "Dashboard not displayed");
 
-            // Add log messages for successful login and dashboard verification
-            System.out.println("Login successful. Dashboard displayed.");
-
-        } catch (Exception e) {
-            // Capture screenshot on failure
-            captureScreenshot("loginAndVerifyDashboard");
-
-            // Handle any exceptions
-            System.out.println("Error occurred during login and dashboard verification: " + e.getMessage());
-        }
     }
 
     @AfterMethod
-    public void tearDown() {
-        driver.quit();
+    public void teardown() {
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }
 
-/* 
+/*
 📚 **Knowledge Sources Used:**
-   1. built-in-solutions (Category: ERROR_SOLUTIONS, Relevance: 61.2)
-   2. built-in-solutions (Category: ERROR_SOLUTIONS, Relevance: 44.1)
-   3. built-in-solutions (Category: ERROR_SOLUTIONS, Relevance: 43.2)
+   1. built-in-solutions (Category: ERROR_SOLUTIONS, Relevance: 83.7)
+   2. built-in-solutions (Category: ERROR_SOLUTIONS, Relevance: 72.9)
+   3. built-in-solutions (Category: ERROR_SOLUTIONS, Relevance: 62.1)
 
+*/
+/*
 💡 **Tip:** This response was enhanced with context-aware knowledge retrieval for better accuracy.
 */
