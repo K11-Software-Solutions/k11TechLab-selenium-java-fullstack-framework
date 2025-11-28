@@ -31,7 +31,7 @@ public static void main(String[] args) {
 
 ## 2. Asking Framework-Specific Questions
 
-![Framework Q&A Screenshot](testartifacts/assets/demo_screenshots/chatbot_nlp/demo_chatbot_framework_qa.jpg)
+![Framework Q&A Screenshot](testartifacts/assets/demo_screenshots/chatbot_nlp/chatbot_framework_qa.jpg)
 
 ```java
 String question = "How do I implement a self-healing Selenium locator?";
