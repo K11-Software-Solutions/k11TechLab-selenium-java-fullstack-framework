@@ -101,32 +101,32 @@ ai.provider.priority=OPENAI,OLLAMA,SIMPLE
 
 ```mermaid
 flowchart TD
-    %% User Layer
-    A[User / Engineer] -->|Natural Language Query| B(Chatbot / NLP Engine)
+      %% User Layer
+      A[User / Engineer] -->|Natural Language Query| B(Chatbot / NLP Engine)
 
-    %% NLP & Intent
-    B -->|Intent Recognition| C{Intent}
+      %% NLP & Intent
+      B -->|Intent Recognition| C{Intent}
 
-    %% Intent Branches
-    C -->|Knowledge Query| D[RAG Engine]
-    C -->|Framework Action| M[Automation Framework]
+      %% Intent Branches
+      C -->|Knowledge Query| D[RAG Engine]
+      C -->|Framework Action| M[Automation Framework]
 
-    %% RAG Internal Flows
-    D -->|Semantic Search| E[Knowledge Base]
-    D -->|Embedding Lookup| F[Embedding Cache]
-    D -->|LLM Completion| G[LLM Provider Manager]
+      %% RAG Internal Flows
+      D -->|Semantic Search| E[Knowledge Base]
+      D -->|Embedding Lookup| F[Embedding Cache]
+      D -->|LLM Completion| G[LLM Provider Manager]
 
-    %% Providers
+      %% Providers
       G --> H1["Cloud / Local LLMs"]
       H1 --> H2["OpenAI, HuggingFace, Ollama"]
 
-    %% Return path
-    E --> D
-    F --> D
-    H --> D
+      %% Return path
+      E --> D
+      F --> D
+      H --> D
 
-    D -->|Synthesized Answer| B
-    B -->|Conversational Response| A
+      D -->|Synthesized Answer| B
+      B -->|Conversational Response| A
 ```
 
 ---
