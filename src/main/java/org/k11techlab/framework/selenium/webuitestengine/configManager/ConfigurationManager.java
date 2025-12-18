@@ -26,6 +26,36 @@ import org.apache.commons.logging.LogFactory;
 import java.io.File;
 
 public class ConfigurationManager {
+        // DEBUG: Print all values of 'packageName' from all loaded configurations
+        public void debugPrintAllPackageNames() {
+            if (configuration == null) {
+                System.out.println("[DEBUG] CombinedConfiguration is null");
+                return;
+            }
+            System.out.println("[DEBUG] All 'packageName' values from loaded configs:");
+            for (int i = 0; i < configuration.getNumberOfConfigurations(); i++) {
+                org.apache.commons.configuration2.Configuration conf = configuration.getConfiguration(i);
+                String value = conf.getString("packageName", null);
+                System.out.println("  Config " + i + ": " + value);
+            }
+            String effective = configuration.getString("packageName", null);
+            System.out.println("[DEBUG] Effective 'packageName': " + effective);
+        }
+            // DEBUG: Print all values of 'mcp.port' from all loaded configurations
+            public void debugPrintAllMcpPorts() {
+                if (configuration == null) {
+                    System.out.println("[DEBUG] CombinedConfiguration is null");
+                    return;
+                }
+                System.out.println("[DEBUG] All 'mcp.port' values from loaded configs:");
+                for (int i = 0; i < configuration.getNumberOfConfigurations(); i++) {
+                    org.apache.commons.configuration2.Configuration conf = configuration.getConfiguration(i);
+                    String value = conf.getString("mcp.port", null);
+                    System.out.println("  Config " + i + ": " + value);
+                }
+                String effective = configuration.getString("mcp.port", null);
+                System.out.println("[DEBUG] Effective 'mcp.port': " + effective);
+            }
     private static final Log log = LogFactory.getLog(ConfigurationManager.class);
     private static final ConfigurationManager INSTANCE = new ConfigurationManager();
     private final CombinedConfiguration configuration;

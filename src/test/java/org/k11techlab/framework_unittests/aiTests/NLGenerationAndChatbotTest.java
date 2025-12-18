@@ -8,7 +8,6 @@ import org.testng.annotations.*;
 import static org.testng.Assert.*;
 import java.util.*;
 import org.k11techlab.framework.selenium.webuitestengine.configManager.ConfigurationManager;
-import org.k11techlab.framework.ai.manager.AIProviderManager;
 
 /**
  * Comprehensive demonstration and testing of Natural Language Test Generation and RAG-Powered Chatbot

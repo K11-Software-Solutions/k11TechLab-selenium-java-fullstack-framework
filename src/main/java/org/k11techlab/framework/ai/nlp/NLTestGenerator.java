@@ -141,29 +141,61 @@ public class NLTestGenerator {
         try {
             // Step 1: Analyze the natural language description
             TestAnalysis analysis = analyzeDescription(request);
-            
+
             // Step 2: Generate test structure
             TestStructure structure = createTestStructure(analysis, request);
-            
+
+            // --- PATCH: Always set a concise, valid class name ---
+            // If the request has a testName, use it; otherwise, generate from description
+            String className = request.getTestName();
+            if (className == null || className.trim().isEmpty()) {
+                className = generateTestName(request.getNaturalLanguageDescription());
+            }
+            structure.setClassName(className);
+
             // Step 3: Generate test code using RAG
             String testCode = generateTestCode(structure, request);
-            
+
             // Step 4: Generate page object if requested
             String pageObjectCode = null;
             if (request.isUsePageObjectModel()) {
                 pageObjectCode = generatePageObject(structure, request);
             }
-            
+
+            // --- PATCH: Ensure generatedSteps is always populated if possible ---
+            List<String> steps = structure.getSteps();
+            if ((steps == null || steps.isEmpty()) && request.getNaturalLanguageDescription() != null && !request.getNaturalLanguageDescription().trim().isEmpty()) {
+                // Fallback: try to split the description into multiple logical steps for complex tests
+                String desc = request.getNaturalLanguageDescription().trim();
+                List<String> fallbackSteps = new ArrayList<>();
+                // Split on common step delimiters (., and, then, proceed to, etc.)
+                String[] parts = desc.split("(?i)(\\band\\b|\\bthen\\b|\\bproceed to\\b|\\.|,|;)");
+                for (String part : parts) {
+                    String step = part.trim();
+                    if (!step.isEmpty()) {
+                        // Remove leading verbs like 'Test', 'Verify', 'Fill', etc.
+                        step = step.replaceAll("^(Test|Verify|Fill|Add|Proceed|Click|Go|Submit|Ensure|Check|Confirm)\\s+", "");
+                        fallbackSteps.add(step);
+                    }
+                }
+                // If still only one step, just use the whole description
+                if (fallbackSteps.size() <= 1) {
+                    fallbackSteps.clear();
+                    fallbackSteps.add(desc);
+                }
+                structure.setSteps(fallbackSteps);
+            }
+
             // Step 5: Create result
             GeneratedTest result = new GeneratedTest(testCode, structure.getClassName());
             result.setPageObjectCode(pageObjectCode);
             result.setGeneratedSteps(structure.getSteps());
             result.setRecommendations(generateRecommendations(analysis, structure));
             result.setConfidenceScore(calculateConfidenceScore(analysis, structure));
-            
+
             Log.info("✅ Test generated successfully with confidence: " + result.getConfidenceScore());
             return result;
-            
+
         } catch (Exception e) {
             Log.error("❌ Test generation failed: " + e.getMessage());
             throw new RuntimeException("Failed to generate test: " + e.getMessage(), e);
@@ -565,12 +597,55 @@ public class NLTestGenerator {
         public String processGeneratedCode(String rawCode, TestStructure structure) {
             // Remove markdown code blocks if present
             String cleanCode = rawCode.replaceAll("```java\\n?", "").replaceAll("```\\n?", "");
-            
+
+            // Comment out all metadata, code examples, summaries, and non-Java lines
+            String[] lines = cleanCode.split("\r?\n");
+            StringBuilder processed = new StringBuilder();
+            int openBraces = 0;
+            for (int i = 0; i < lines.length; i++) {
+                String line = lines[i];
+                String trimmed = line.trim();
+                boolean isMeta = trimmed.startsWith("ℹ️") || trimmed.startsWith("📚") || trimmed.startsWith("💡") || trimmed.startsWith("🔍") || trimmed.startsWith("?") || trimmed.startsWith("This test class follows") || trimmed.startsWith("This Selenium test class") || trimmed.startsWith("In the test class above") || trimmed.startsWith("**") || trimmed.startsWith("Tip:") || trimmed.startsWith("In the above Java class:") || trimmed.matches("^#+ ") || trimmed.matches("^\\* ") || trimmed.matches("^\\d+\\. ");
+                boolean isMarkdown = trimmed.startsWith("/*") || trimmed.startsWith("*/") || trimmed.startsWith("//") || trimmed.startsWith("---") || trimmed.startsWith("```") || trimmed.startsWith("<") || trimmed.startsWith("> ");
+                boolean isJava = trimmed.startsWith("package ") || trimmed.startsWith("import ") || trimmed.contains(" class ") || trimmed.startsWith("public class") || trimmed.startsWith("private class") || trimmed.startsWith("protected class") || trimmed.startsWith("class ") || trimmed.startsWith("@Test") || trimmed.startsWith("@BeforeMethod") || trimmed.startsWith("@AfterMethod") || trimmed.contains("void ") || trimmed.contains("WebElement ") || trimmed.contains("getDriver()") || trimmed.contains("driver") || trimmed.contains("elementHealer") || trimmed.contains("WebDriverWait") || trimmed.contains("ExpectedConditions") || trimmed.contains("try ") || trimmed.contains("catch ") || trimmed.contains("e.printStackTrace()") || trimmed.contains("captureScreenshot") || trimmed.contains("Duration.ofSeconds") || trimmed.contains("assert") || trimmed.contains("return ") || trimmed.contains("extends BaseSeleniumTest");
+
+                // Track open/close braces for block completion
+                openBraces += countChar(line, '{');
+                openBraces -= countChar(line, '}');
+
+                // Enhance: Add a comment above each commented-out action line
+                if (trimmed.startsWith("//") && (trimmed.contains("sendKeys(") || trimmed.contains("click(") || trimmed.contains("selectBy") || trimmed.contains("submit(") || trimmed.contains("clear(") || trimmed.contains("getText(") || trimmed.contains("getAttribute(") )) {
+                    processed.append("// [ACTION: Uncomment to enable this step in real execution]\n");
+                }
+
+                // Enhance: Mark placeholder validations as TODOs
+                if (trimmed.startsWith("//") && (trimmed.toLowerCase().contains("validate") || trimmed.toLowerCase().contains("verify") || trimmed.toLowerCase().contains("assert") || trimmed.toLowerCase().contains("check") || trimmed.toLowerCase().contains("ensure") || trimmed.toLowerCase().contains("confirm"))) {
+                    processed.append("// TODO: Implement validation logic below\n");
+                }
+
+                if (isMeta) {
+                    processed.append("/* ").append(line).append(" */\n");
+                } else if (isJava || isMarkdown || trimmed.isEmpty()) {
+                    processed.append(line).append("\n");
+                } else {
+                    // Any other non-Java line, comment it out
+                    processed.append("// ").append(line).append("\n");
+                }
+            }
+
+            // Auto-close any unclosed Java blocks (try/catch/class/method)
+            while (openBraces > 0) {
+                processed.append("}\n");
+                openBraces--;
+            }
+
+            cleanCode = processed.toString();
+
             // Ensure proper formatting
             if (!cleanCode.contains("package " + structure.getPackageName())) {
                 cleanCode = "package " + structure.getPackageName() + ";\n\n" + cleanCode;
             }
-            
+
             // Add standard imports if missing
             if (!cleanCode.contains("import org.testng.annotations.Test")) {
                 String imports = generateStandardImports();
@@ -578,8 +653,17 @@ public class NLTestGenerator {
                 cleanCode = cleanCode.substring(0, packageEnd) + "\n\n" + imports + "\n" + 
                            cleanCode.substring(packageEnd);
             }
-            
+
             return cleanCode;
+        }
+
+        // Helper to count occurrences of a character
+        private int countChar(String s, char c) {
+            int count = 0;
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) == c) count++;
+            }
+            return count;
         }
         
         private String generateStandardImports() {

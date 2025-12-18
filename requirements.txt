@@ -1,0 +1,4 @@
+# Requirements for Playwright test execution
+nodejs
+npm
+@playwright/test

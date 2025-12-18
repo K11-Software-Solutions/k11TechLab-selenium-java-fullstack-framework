@@ -44,6 +44,38 @@ import java.text.MessageFormat;
 public class BaseSeleniumTest implements BaseTestCase {
 
     /**
+     * Write a simple HTML report to the given file.
+     * @param status Test status (e.g., PASSED/FAILED)
+     * @param details Details to include in the report
+     * @param filename Output HTML file name
+     */
+    protected void writeHtmlReport(String status, String details, String filename) {
+        String html = "<html><head><title>Test Report</title></head><body>" +
+                "<h2>Test Result: " + status + "</h2>" +
+                "<pre>" + details + "</pre>" +
+                "<p>Generated at: " + java.time.LocalDateTime.now() + "</p>" +
+                "</body></html>";
+        try (java.io.FileWriter fw = new java.io.FileWriter(filename, false)) {
+            fw.write(html);
+        } catch (Exception e) {
+            System.err.println("[HTML Report Error] " + e.getMessage());
+        }
+    }
+
+    /**
+     * Append a log message to the given file.
+     * @param message Log message
+     * @param filename Output log file name
+     */
+    protected void logToFile(String message, String filename) {
+        try (java.io.FileWriter fw = new java.io.FileWriter(filename, true)) {
+            fw.write(message + System.lineSeparator());
+        } catch (Exception e) {
+            System.err.println("[LogToFile Error] " + e.getMessage());
+        }
+    }
+
+    /**
      * The webdriver for this class. Default browser is Chrome. It can be replaced with other browser drivers
      */
     public ThreadLocal<WebDriver> driver = ThreadLocal.withInitial(() ->

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K11 Software Solutions - Login</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #e9ecef; }
+        .container { max-width: 400px; margin: 80px auto; background: #fff; padding: 32px; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.12); }
+        .logo { text-align: center; margin-bottom: 24px; }
+        .logo img { width: 80px; }
+        h2 { text-align: center; margin-bottom: 24px; color: #007bff; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin-bottom: 18px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        button { width: 100%; padding: 12px; background: #007bff; color: #fff; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; font-weight: 600; }
+        button:hover { background: #0056b3; }
+        .dashboard { display: none; margin-top: 28px; text-align: center; color: #28a745; font-weight: bold; font-size: 20px; }
+        .error { color: #dc3545; text-align: center; margin-bottom: 16px; font-weight: 500; }
+        .footer { text-align: center; margin-top: 32px; color: #888; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <!-- Local logo file in same directory -->
+            <img src="k11_logo.png" alt="K11 Software Solutions Logo">
+        </div>
+        <h2>K11 Software Solutions Login</h2>
+        <div id="error" class="error"></div>
+        <form id="loginForm">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter username" autocomplete="username">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter password" autocomplete="current-password">
+            <button type="submit" id="loginButton">Login</button>
+            <div style="text-align:center; margin-top:8px; color:#888; font-size:14px;">
+                <span>Demo credentials: <b>user</b> / <b>pass</b></span>
+            </div>
+        </form>
+        <div style="text-align:center; margin-top:10px;">
+            <a href="#" id="forgotPasswordLink">Forgot password?</a>
+        </div>
+        <form id="resetForm" style="display:none; margin-top:24px;">
+            <h3 style="text-align:center; color:#007bff; margin-bottom:16px;">Reset Password</h3>
+            <label for="resetUsername">Username</label>
+            <input type="text" id="resetUsername" name="resetUsername" placeholder="Enter your username" autocomplete="username">
+            <button type="submit" id="resetButton">Reset Password</button>
+            <div id="resetMessage" style="margin-top:16px; text-align:center; color:#28a745; font-weight:500;"></div>
+            <div style="text-align:center; margin-top:10px;">
+                <a href="#" id="backToLoginLink">Back to login</a>
+            </div>
+        </form>
+        <div id="dashboard" class="dashboard">Welcome to the K11 Software Solutions Dashboard!</div>
+    </div>
+    <div class="footer">&copy; 2025 K11 Software Solutions. All rights reserved.</div>
+    <script>
+        const form = document.getElementById('loginForm');
+        const dashboard = document.getElementById('dashboard');
+        const errorDiv = document.getElementById('error');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const resetForm = document.getElementById('resetForm');
+        const resetUsername = document.getElementById('resetUsername');
+        const resetButton = document.getElementById('resetButton');
+        const resetMessage = document.getElementById('resetMessage');
+        const backToLoginLink = document.getElementById('backToLoginLink');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            errorDiv.textContent = '';
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            // Demo credentials
+            if(username === 'user' && password === 'pass') {
+                form.style.display = 'none';
+                dashboard.style.display = 'block';
+            } else {
+                errorDiv.textContent = 'Invalid username or password.';
+            }
+        });
+
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            form.style.display = 'none';
+            resetForm.style.display = 'block';
+            errorDiv.textContent = '';
+        });
+
+        resetForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            resetMessage.textContent = '';
+            if(resetUsername.value.trim() === '') {
+                resetMessage.style.color = '#dc3545';
+                resetMessage.textContent = 'Please enter your username.';
+                return;
+            }
+            // Simulate password reset
+            resetMessage.style.color = '#28a745';
+            resetMessage.textContent = 'A password reset link has been sent to your email (demo).';
+        });
+
+        backToLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            resetForm.style.display = 'none';
+            form.style.display = 'block';
+            resetMessage.textContent = '';
+        });
+    </script>
+</body>
+</html>

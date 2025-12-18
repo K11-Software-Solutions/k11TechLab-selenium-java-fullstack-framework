@@ -1,0 +1,8 @@
+{
+  "name": "e2e-tools",
+  "private": true,
+  "devDependencies": {
+    "@playwright/mcp": "^0.0.52",
+    "@playwright/test": "^1.57.0"
+  }
+}
