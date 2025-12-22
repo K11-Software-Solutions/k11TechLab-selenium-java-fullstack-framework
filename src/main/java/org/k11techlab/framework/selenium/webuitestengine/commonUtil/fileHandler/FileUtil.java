@@ -19,6 +19,24 @@ import java.util.Random;
 import java.util.Vector;
 
 public class FileUtil extends FileUtils {
+
+		/**
+		 * Deletes all files (not subdirectories) in the given directory.
+		 * @param dirPath Path to the directory to empty.
+		 */
+		public static void emptyDirectory(String dirPath) {
+			File dir = new File(dirPath);
+			if (dir.exists() && dir.isDirectory()) {
+				File[] files = dir.listFiles();
+				if (files != null) {
+					for (File f : files) {
+						if (!f.isDirectory()) {
+							f.delete();
+						}
+					}
+				}
+			}
+		}
 	private static int counter = -1; /* Protected by tmpFileLock */
 
     private Boolean checkEmptyFile(final File file, long fileLengthLimit) throws IOException {

@@ -1,0 +1,17 @@
+Generate a complete, compilable Java TestNG test class using Playwright for Java.
+Package: {packageName}
+Class: {className}
+MUST include:
+- All required imports (Playwright, TestNG, ConfigurationManager, etc).
+- A @BeforeClass setUp() method that launches Playwright, a Chromium browser in headless mode, and creates a Page. Store Playwright, Browser, and Page as fields.
+- A @Test method that:
+  - Reads weburl, username, and password using ConfigurationManager.getBundle().getPropertyValue('weburl'), etc.
+  - Navigates to the weburl.
+  - Fills the username and password fields and clicks the login button (use generic selectors if not specified).
+  - Asserts that the dashboard is visible after login (e.g., page.isVisible('text=Dashboard')).
+- A @AfterClass tearDown() method that closes the browser and Playwright.
+- Output ONLY Java code, no markdown.
+- The code must be complete and not truncated.
+
+Scenario:
+{scenario}

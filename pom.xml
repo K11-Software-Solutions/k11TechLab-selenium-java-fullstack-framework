@@ -28,6 +28,9 @@
                 <version>2.20</version>
                 <configuration>
                     <testFailureIgnore>true</testFailureIgnore>
+                    <includes>
+                        <include>org/k11techlab/framework_unittests/webUITests/wikipedia/**</include>
+                    </includes>
                 </configuration>
             </plugin>
             <plugin>
@@ -64,7 +67,6 @@
                                     <groupId>com.microsoft.playwright</groupId>
                                     <artifactId>playwright</artifactId>
                                     <version>1.44.0</version>
-                                    <scope>test</scope>
                                 </dependency>
                         <dependency>
                             <groupId>com.github.javaparser</groupId>
