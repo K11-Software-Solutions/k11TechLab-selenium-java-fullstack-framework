@@ -44,7 +44,8 @@ public class MongoContextStore implements ContextStore {
                 try {
                     tempClient.close();
                 } catch (Exception closeEx) {
-                    // Ignore close errors
+                    // Safe to ignore: MongoDB client cleanup failure when connection never succeeded
+                    // The client is already in a failed state and will be discarded
                 }
                 tempClient = null;
             }

@@ -27,7 +27,7 @@ public class MCPServer {
             mongoDb = ConfigurationManager.getBundle().getPropertyValue("mongo.db");
             mongoCollection = ConfigurationManager.getBundle().getPropertyValue("mongo.collection");
         } catch (Exception e) {
-            System.out.println("ℹ️  Using default MongoDB configuration");
+            System.out.println("ℹ️  Using default MongoDB configuration (failed to load: mongo.uri, mongo.db, mongo.collection)");
         }
         
         MongoContextStore mongoStore = new MongoContextStore(mongoUri, mongoDb, mongoCollection);
