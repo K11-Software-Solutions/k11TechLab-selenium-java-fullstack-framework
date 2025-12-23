@@ -2,7 +2,7 @@ package org.k11techlab.framework.ai.mcp.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.k11techlab.framework.ai.rag.RAGEnhancedAIClient;
+import org.k11techlab.framework.ai.llm.LLMInterface;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -12,9 +12,9 @@ import static org.k11techlab.framework.ai.util.HttpUtils.escapeJson;
 
 public class CompletionHandler implements HttpHandler {
 
-    private final RAGEnhancedAIClient aiClient;
+    private final LLMInterface aiClient;
 
-    public CompletionHandler(RAGEnhancedAIClient aiClient) {
+    public CompletionHandler(LLMInterface aiClient) {
         this.aiClient = aiClient;
     }
 

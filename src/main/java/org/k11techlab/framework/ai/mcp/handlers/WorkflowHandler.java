@@ -2,8 +2,8 @@ package org.k11techlab.framework.ai.mcp.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.k11techlab.framework.ai.mcp.store.MongoContextStore;
-import org.k11techlab.framework.ai.rag.RAGEnhancedAIClient;
+import org.k11techlab.framework.ai.mcp.store.ContextStore;
+import org.k11techlab.framework.ai.llm.LLMInterface;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -13,10 +13,10 @@ import static org.k11techlab.framework.ai.util.HttpUtils.*;
 
 public class WorkflowHandler implements HttpHandler {
 
-    private final RAGEnhancedAIClient aiClient;
-    private final MongoContextStore contextStore;
+    private final LLMInterface aiClient;
+    private final ContextStore contextStore;
 
-    public WorkflowHandler(RAGEnhancedAIClient aiClient, MongoContextStore contextStore) {
+    public WorkflowHandler(LLMInterface aiClient, ContextStore contextStore) {
         this.aiClient = aiClient;
         this.contextStore = contextStore;
     }

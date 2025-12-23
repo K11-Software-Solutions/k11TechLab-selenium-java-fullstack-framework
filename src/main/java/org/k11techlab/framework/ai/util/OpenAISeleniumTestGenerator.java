@@ -232,10 +232,10 @@ public class OpenAISeleniumTestGenerator {
     private int getMCPPort() {
         try {
             String portStr = ConfigurationManager.getBundle().getPropertyValue("mcp.port");
-            return portStr != null ? Integer.parseInt(portStr.trim()) : 8080;
+            return portStr != null ? Integer.parseInt(portStr.trim()) : 8090;
         } catch (Exception e) {
-            System.err.println("⚠ Failed to load MCP port, using default 8080.");
-            return 8080;
+            System.err.println("⚠ Failed to load MCP port, using default 8090.");
+            return 8090;
         }
     }
 
@@ -244,8 +244,17 @@ public class OpenAISeleniumTestGenerator {
         new Thread(() -> {
             try {
                 org.k11techlab.framework.ai.mcp.MCPServer server = new org.k11techlab.framework.ai.mcp.MCPServer();
-                server.start(8080);
-                System.out.println("✅ MCP Server started on port 8080");
+                int port = 8090;
+                try {
+                    String portStr = ConfigurationManager.getBundle().getPropertyValue("mcp.port");
+                    if (portStr != null && !portStr.isEmpty()) {
+                        port = Integer.parseInt(portStr.trim());
+                    }
+                } catch (Exception e) {
+                    // Use default
+                }
+                server.start(port);
+                System.out.println("✅ MCP Server started on port " + port);
             } catch (Exception e) {
                 System.err.println("[MCPServer] Already running or failed to start: " + e.getMessage());
             }

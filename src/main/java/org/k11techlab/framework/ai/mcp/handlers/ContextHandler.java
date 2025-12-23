@@ -2,7 +2,7 @@ package org.k11techlab.framework.ai.mcp.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.k11techlab.framework.ai.mcp.store.MongoContextStore;
+import org.k11techlab.framework.ai.mcp.store.ContextStore;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -12,9 +12,9 @@ import static org.k11techlab.framework.ai.util.HttpUtils.*;
 
 public class ContextHandler implements HttpHandler {
 
-    private final MongoContextStore store;
+    private final ContextStore store;
 
-    public ContextHandler(MongoContextStore store) {
+    public ContextHandler(ContextStore store) {
         this.store = store;
     }
 
