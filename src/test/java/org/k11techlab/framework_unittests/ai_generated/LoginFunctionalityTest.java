@@ -17,6 +17,9 @@ public class LoginFunctionalityTest extends BaseSeleniumTest {
 
         getDriver().get(ConfigurationManager.getBundle().getPropertyValue("weburl"));
 
+        // Click on the dashboard link before login
+        elementHealer.findElement("Dashboard link").click();
+
         elementHealer.findElement("Username input field").sendKeys(ConfigurationManager.getBundle().getPropertyValue("username"));
         elementHealer.findElement("Password input field").sendKeys(ConfigurationManager.getBundle().getPropertyValue("password"));
         elementHealer.findElement("Login button").click();

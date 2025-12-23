@@ -47,3 +47,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# MCP AI Test logs and reports
+mcp_testlog/
+mcp_testreport/

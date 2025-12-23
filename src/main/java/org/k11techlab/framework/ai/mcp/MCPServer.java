@@ -29,6 +29,7 @@ public class MCPServer {
         server.createContext("/mcp/correct-code", new CorrectCodeHandler(new OpenAIClient()));
         server.createContext("/mcp/generate-and-run-selenium-test", new GenerateAndRunTestHandler());
         server.createContext("/mcp/generate-and-run-playwright-test", new GenerateAndRunTestHandler());
+        server.createContext("/mcp/generate-page-object", new GeneratePageObjectHandler());
 
         server.setExecutor(null);
         server.start();
