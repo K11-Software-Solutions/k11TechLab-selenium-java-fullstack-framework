@@ -243,16 +243,10 @@ public class OpenAISeleniumTestGenerator {
     public static void ensureMCPServerRunning() {
         new Thread(() -> {
             try {
+                OpenAISeleniumTestGenerator generator = new OpenAISeleniumTestGenerator(new OpenAIClient());
+                int port = generator.getMCPPort();
+                
                 org.k11techlab.framework.ai.mcp.MCPServer server = new org.k11techlab.framework.ai.mcp.MCPServer();
-                int port = 8090;
-                try {
-                    String portStr = ConfigurationManager.getBundle().getPropertyValue("mcp.port");
-                    if (portStr != null && !portStr.isEmpty()) {
-                        port = Integer.parseInt(portStr.trim());
-                    }
-                } catch (Exception e) {
-                    // Use default
-                }
                 server.start(port);
                 System.out.println("✅ MCP Server started on port " + port);
             } catch (Exception e) {

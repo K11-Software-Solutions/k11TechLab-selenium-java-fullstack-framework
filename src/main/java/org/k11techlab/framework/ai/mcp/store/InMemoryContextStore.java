@@ -34,4 +34,9 @@ public class InMemoryContextStore implements ContextStore {
         }
         return documents;
     }
+    
+    @Override
+    public void close() {
+        // In-memory store doesn't require cleanup
+    }
 }
