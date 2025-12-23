@@ -1,0 +1,28 @@
+# Page Object Creation Prompt for HomePage and LoginPage
+
+{
+  "pageObjects": [
+    {
+      "className": "HomePage",
+      "fields": {
+        "isDashboardVisible": {"id": "Dashboard", "method": "isVisible"},
+        "clickServiceLink": {"id": "service", "text": "Service", "method": "click"},
+        "clickLoginMenu": {"id": "loginMenu", "text": "Login", "method": "click"},
+        "clickRegisterMenu": {"id": "registerMenu", "text": "Register", "method": "click"}
+      }
+    },
+    {
+      "className": "LoginPage",
+      "fields": {
+        "enterUsername": {"id": "username", "name": "username", "text": "Username", "method": "fill"},
+        "enterPassword": {"id": "password", "name": "password", "text": "Password", "method": "fill"},
+        "clickLogin": {"id": "login", "name": "login", "text": "Login", "method": "click"}
+      }
+    }
+  ]
+}
+
+- Use id as the first preference, then name, then text for selectors.
+- Each field should generate a method in the Java class.
+- Use Playwright's Page API for actions (fill, click, isVisible, etc).
+- Output only valid Java code for the page object classes.

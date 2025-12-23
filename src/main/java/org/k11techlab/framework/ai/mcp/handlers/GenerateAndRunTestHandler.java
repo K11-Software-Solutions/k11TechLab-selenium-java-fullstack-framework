@@ -33,7 +33,7 @@ public class GenerateAndRunTestHandler implements HttpHandler {
 
     // Playwright wiring
     this.playwrightGenerator = new PlaywrightTestGenerator(openAI);
-    this.playwrightWorkflow = new PlaywrightWorkflow(playwrightGenerator, openAI, 2);
+    this.playwrightWorkflow = new PlaywrightWorkflow();
    }
 
 
@@ -55,7 +55,7 @@ public class GenerateAndRunTestHandler implements HttpHandler {
 
         String packageName = (configPackage != null && !configPackage.isBlank())
                 ? configPackage.trim()
-                : "org.k11techlab.framework_unittests.ai_generated";
+                : "org.k11techlab.framework_unittests.ai_generated.k11softwaresolutions";
 
         String classBase = "GeneratedTest_" + System.currentTimeMillis();
 

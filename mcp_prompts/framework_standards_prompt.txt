@@ -1,0 +1,17 @@
+# Playwright Framework Standards Prompt
+
+- All Playwright test classes must extend `BasePlaywrightTest`.
+- Use `PlaywrightManager.getInstance()` to obtain the browser, context, and page.
+- Do not use `Playwright.create()` or direct browser/page instantiation in test classes.
+- Use `@BeforeClass` and `@AfterClass` for setup and teardown, delegating to `BasePlaywrightTest` where possible.
+- Example test method:
+
+  @Test
+  public void testExample() {
+      Page page = PlaywrightManager.getInstance().getPage();
+      // test steps...
+  }
+
+- Use the Page Object Model for all page interactions.
+- Follow Java and TestNG best practices for naming and structure.
+- All test code should be readable, maintainable, and DRY.

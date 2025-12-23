@@ -1,6 +1,7 @@
+
 package org.k11techlab.framework.ai.openai;
 
-
+import org.k11techlab.framework.selenium.webuitestengine.configManager.ConfigurationManager;
 import org.k11techlab.framework.ai.llm.LLMInterface;
 import org.k11techlab.framework.selenium.webuitestengine.logger.Log;
 import java.io.IOException;
@@ -53,7 +54,16 @@ public class OpenAIClient implements LLMInterface {
 
     @Override
     public String generateResponse(String prompt) {
-        return generateResponse(prompt, 0.7f, 200);
+        int maxTokens = 2048;
+        try {
+            String configMaxTokens = ConfigurationManager.getBundle().getPropertyValue("openai.maxTokens");
+            if (configMaxTokens != null && !configMaxTokens.isEmpty()) {
+                maxTokens = Integer.parseInt(configMaxTokens);
+            }
+        } catch (Exception e) {
+            // fallback to default if config not found or parse error
+        }
+        return generateResponse(prompt, 0.7f, maxTokens);
     }
 
     @Override
