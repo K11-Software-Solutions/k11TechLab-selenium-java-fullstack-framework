@@ -155,6 +155,7 @@ This framework now includes advanced AI-powered features for smarter, context-aw
    - Integrates with RAG, OpenAI, and local LLMs; bridges to Playwright/Selenium; supports prompt-driven automation
 - **AI Demo & Documentation:**
    - [Self-Healing Demo/Test Class](src/main/java/org/k11techlab/framework/ai/selenium/selfhealing/SelfHealingDemo.java)
+   - [SelfHealingDemoTest.java (Unit Test)](src/test/java/org/k11techlab/framework_unittests/aiTests/SelfHealingDemoTest.java)
    - [RAGComponentsDemo.java (RAG Test Class)](src/main/java/org/k11techlab/framework/ai/rag/demo/RAGComponentsDemo.java)
    - [Sample Output (Cache Hits!)](RAGComponentsDemo_output.txt)
    - [RAG Demo Article & How-To](RAG_Demo.md)
