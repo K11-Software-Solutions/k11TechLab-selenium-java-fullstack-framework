@@ -36,6 +36,38 @@ This Java-based test automation framework is designed to support **end-to-end te
    - Conversational UI for natural language queries
    - Integrates with RAG and knowledge base for context-aware answers
    - Supports both local and cloud LLMs
+   
+### 🧠 Model Control Plane (MCP) Server — AI-Driven Test Generation & Review
+
+- **Lightweight Java HTTP server** for AI-powered test automation workflows
+- **Endpoints for:**
+   - Page object generation from prompt files
+   - Playwright/Selenium test generation and execution
+   - Automated code review of generated tests (`/mcp/test-code-review`)
+   - Reporting: lists test run artifacts and logs (`/mcp/report`)
+- **Pluggable AI clients:** Supports RAG, OpenAI, and local LLMs for prompt completion and code review
+- **Playwright bridge:** Runs Playwright tests via a Node.js subprocess for browser automation
+- **MongoDB context store:** (optional) for storing workflow and conversation context
+- **Demo/test script:** [`scripts/test_mcp.sh`](scripts/test_mcp.sh) exercises all endpoints for quick validation
+
+**Quick start:**
+
+```bash
+# Start the MCP server (from project root)
+
+# Or run directly with Java if built:
+
+
+# In another terminal, run the demo script:
+# 🚀 AI-Powered Features
+
+**Endpoints:**
+- `POST /mcp/generate-page-object` — Generate page objects from prompt
+- `POST /mcp/generate-and-run-playwright-test` — Generate & run Playwright test
+- `POST /mcp/generate-and-run-selenium-test` — Generate & run Selenium test
+- `POST /mcp/test-code-review` — Automated AI code review for test code
+- `GET  /mcp/report` — List test run reports and logs
+
 
 Built entirely with open-source libraries, this framework is **fully extensible**—ready to scale for validations involving files, emails, microservices, or third-party system integrations.
 
@@ -61,6 +93,10 @@ flowchart TD
    C --> D[RAG Engine]
    C --> E[Self-Healing Engine]
    C --> J[Chatbot/NLP & Conversational AI]
+   C --> M[MCP Server]
+   M --> C
+   M --> N[Playwright/Selenium Bridge]
+   M --> O[Prompt Files]
    D --> F[Embedding Providers]
    D --> G[Embedding Cache]
    D --> H[Docs/Knowledge Base]
@@ -87,6 +123,10 @@ This framework now includes advanced AI-powered features for smarter, context-aw
 - **Persistent Embedding Cache:**
    - Embeddings are computed once per document chunk and reused for all future runs
    - Massive speedup and cost savings for repeated queries
+- **Model Control Plane (MCP) Server:**
+   - Lightweight Java HTTP server for AI-powered test generation, review, and workflow orchestration
+   - Exposes endpoints for page object generation, Playwright/Selenium test execution, automated code review, and reporting
+   - Integrates with RAG, OpenAI, and local LLMs; bridges to Playwright/Selenium; supports prompt-driven automation
 - **AI Demo & Documentation:**
    - [Self-Healing Demo/Test Class](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/src/main/java/org/k11techlab/framework/ai/selenium/selfhealing/SelfHealingDemo.java)
    - [RAGComponentsDemo.java (RAG Test Class)](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/src/main/java/org/k11techlab/framework/ai/rag/demo/RAGComponentsDemo.java)
