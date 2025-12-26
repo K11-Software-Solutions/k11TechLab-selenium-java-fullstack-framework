@@ -30,6 +30,8 @@ public class MCPServer {
         server.createContext("/mcp/generate-and-run-selenium-test", new GenerateAndRunTestHandler());
         server.createContext("/mcp/generate-and-run-playwright-test", new GenerateAndRunTestHandler());
         server.createContext("/mcp/generate-page-object", new GeneratePageObjectHandler());
+        server.createContext("/mcp/test-code-review", new TestCodeReviewHandler(aiClient));
+        server.createContext("/mcp/report", new ReportingHandler());
 
         server.setExecutor(null);
         server.start();
