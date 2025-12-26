@@ -154,10 +154,10 @@ This framework now includes advanced AI-powered features for smarter, context-aw
    - Exposes endpoints for page object generation, Playwright/Selenium test execution, automated code review, and reporting
    - Integrates with RAG, OpenAI, and local LLMs; bridges to Playwright/Selenium; supports prompt-driven automation
 - **AI Demo & Documentation:**
-   - [Self-Healing Demo/Test Class](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/src/main/java/org/k11techlab/framework/ai/selenium/selfhealing/SelfHealingDemo.java)
-   - [RAGComponentsDemo.java (RAG Test Class)](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/src/main/java/org/k11techlab/framework/ai/rag/demo/RAGComponentsDemo.java)
-   - [Sample Output (Cache Hits!)](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/RAGComponentsDemo_output.txt)
-   - [RAG Demo Article & How-To](https://github.com/K11-Software-Solutions/k11TechLab-selenium-java-fullstack-framework/blob/main/RAG_Demo.md)
+   - [Self-Healing Demo/Test Class](src/main/java/org/k11techlab/framework/ai/selenium/selfhealing/SelfHealingDemo.java)
+   - [RAGComponentsDemo.java (RAG Test Class)](src/main/java/org/k11techlab/framework/ai/rag/demo/RAGComponentsDemo.java)
+   - [Sample Output (Cache Hits!)](RAGComponentsDemo_output.txt)
+   - [RAG Demo Article & How-To](RAG_Demo.md)
 
 These enhancements make the framework ready for next-generation, AI-assisted, and self-healing test automation and knowledge retrieval.
 
