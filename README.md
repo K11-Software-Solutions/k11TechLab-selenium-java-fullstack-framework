@@ -154,7 +154,6 @@ This framework now includes advanced AI-powered features for smarter, context-aw
    - Exposes endpoints for page object generation, Playwright/Selenium test execution, automated code review, and reporting
    - Integrates with RAG, OpenAI, and local LLMs; bridges to Playwright/Selenium; supports prompt-driven automation
 - **AI Demo & Documentation:**
-   - [Self-Healing Demo/Test Class](src/main/java/org/k11techlab/framework/ai/selenium/selfhealing/SelfHealingDemo.java)
    - [SelfHealingDemoTest.java (Unit Test)](src/test/java/org/k11techlab/framework_unittests/aiTests/SelfHealingDemoTest.java)
    - [RAGComponentsDemo.java (RAG Test Class)](src/main/java/org/k11techlab/framework/ai/rag/demo/RAGComponentsDemo.java)
    - [Sample Output (Cache Hits!)](RAGComponentsDemo_output.txt)
@@ -311,4 +310,5 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 
 For consulting, training, or implementation support:  
 🔗 [softwaretestautomation.org](https://www.softwaretestautomation.org)  
-📧 kavita.jadhav.sdet@gmail.com
+🔗 [k11softwaresolutions.com](https://www.k11softwaresolutions.com)  
+📧 k11softwaresolutions@outlook.com
