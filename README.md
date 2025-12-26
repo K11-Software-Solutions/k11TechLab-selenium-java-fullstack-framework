@@ -68,6 +68,32 @@ This Java-based test automation framework is designed to support **end-to-end te
 - `POST /mcp/test-code-review` — Automated AI code review for test code
 - `GET  /mcp/report` — List test run reports and logs
 
+**Usage Example:**
+
+Start the MCP server:
+```bash
+mvn exec:java -Dexec.mainClass="org.k11techlab.framework.ai.mcp.MCPServer"
+```
+
+Generate a page object from a prompt file:
+```bash
+curl -X POST http://localhost:8090/mcp/generate-page-object \
+  -H "Content-Type: application/json" \
+  -d '{"promptFile":"k11softwaresolutions/pages/pageobject_creation_prompt_multi.txt"}'
+```
+
+Review a test code snippet with AI:
+```bash
+curl -X POST http://localhost:8090/mcp/test-code-review \
+  -H "Content-Type: text/plain" \
+  --data-binary @YourTestFile.java
+```
+
+Fetch a list of test run reports and logs:
+```bash
+curl http://localhost:8090/mcp/report
+```
+
 
 Built entirely with open-source libraries, this framework is **fully extensible**—ready to scale for validations involving files, emails, microservices, or third-party system integrations.
 
